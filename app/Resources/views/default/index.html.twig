@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Электронное портфолио</h1>
+    <p><a href="{{ path('signup') }}">Зарегистрироваться</a></p>
+    {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+        <p><a href="{{ path('logout') }}">Выйти</a> </p>
+    {% else %}
+        <p><a href="{{ path('login') }}">Войти</a> </p>
+    {% endif %}
+{% endblock %}
