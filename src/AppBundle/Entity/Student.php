@@ -123,4 +123,28 @@ class Student
     {
         return $this->user;
     }
+
+    /**
+     * Set degree
+     *
+     * @param string $degree
+     *
+     * @return Student
+     */
+    public function setDegree($degree)
+    {
+        $this->degree = $degree;
+
+        return $this;
+    }
+
+    /**
+     * Get degree
+     *
+     * @return string
+     */
+    public function getDegree()
+    {
+        return $this->degree;
+    }
 }

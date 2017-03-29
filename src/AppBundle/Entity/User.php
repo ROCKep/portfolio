@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * User
  *
- * @ORM\Table(name="user")
+ * @ORM\Table(name="`user`")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  * @UniqueEntity(fields="email", message="Email already taken")
  * @UniqueEntity(fields="username", message="Username already taken")
@@ -107,6 +107,11 @@ class User implements AdvancedUserInterface, \Serializable
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Job", mappedBy="user")
      */
     private $jobs;
+
+    /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Membership", mappedBy="user")
+     */
+    private $memberships;
 
     /**
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Message", mappedBy="sender")
@@ -214,6 +219,7 @@ class User implements AdvancedUserInterface, \Serializable
         $this->materials = new \Doctrine\Common\Collections\ArrayCollection();
         $this->comments = new \Doctrine\Common\Collections\ArrayCollection();
         $this->categories = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->memberships = new \Doctrine\Common\Collections\ArrayCollection();
         $this->isActive = true;
     }
 
@@ -297,30 +303,6 @@ class User implements AdvancedUserInterface, \Serializable
     public function getLastName()
     {
         return $this->lastName;
-    }
-
-    /**
-     * Set degree
-     *
-     * @param string $degree
-     *
-     * @return User
-     */
-    public function setDegree($degree)
-    {
-        $this->degree = $degree;
-
-        return $this;
-    }
-
-    /**
-     * Get degree
-     *
-     * @return string
-     */
-    public function getDegree()
-    {
-        return $this->degree;
     }
 
     /**
@@ -789,5 +771,39 @@ class User implements AdvancedUserInterface, \Serializable
     public function getRestriction()
     {
         return $this->restriction;
+    }
+
+    /**
+     * Add membership
+     *
+     * @param \AppBundle\Entity\Membership $membership
+     *
+     * @return User
+     */
+    public function addMembership(\AppBundle\Entity\Membership $membership)
+    {
+        $this->memberships[] = $membership;
+
+        return $this;
+    }
+
+    /**
+     * Remove membership
+     *
+     * @param \AppBundle\Entity\Membership $membership
+     */
+    public function removeMembership(\AppBundle\Entity\Membership $membership)
+    {
+        $this->memberships->removeElement($membership);
+    }
+
+    /**
+     * Get memberships
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getMemberships()
+    {
+        return $this->memberships;
     }
 }

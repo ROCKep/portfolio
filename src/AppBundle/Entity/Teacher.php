@@ -38,7 +38,7 @@ class Teacher
     /**
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Position", mappedBy="teacher")
      */
-    private $position;
+    private $positions;
     /**
      * Constructor
      */
@@ -137,5 +137,39 @@ class Teacher
     public function getPosition()
     {
         return $this->position;
+    }
+
+    /**
+     * Set degree
+     *
+     * @param string $degree
+     *
+     * @return Teacher
+     */
+    public function setDegree($degree)
+    {
+        $this->degree = $degree;
+
+        return $this;
+    }
+
+    /**
+     * Get degree
+     *
+     * @return string
+     */
+    public function getDegree()
+    {
+        return $this->degree;
+    }
+
+    /**
+     * Get positions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPositions()
+    {
+        return $this->positions;
     }
 }
