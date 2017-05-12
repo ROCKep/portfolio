@@ -6,9 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\Role\RoleInterface;
 
 /**
- * Role
- *
- * @ORM\Table(name="role")
+ * @ORM\Table(name="roles")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\RoleRepository")
  */
 class Role implements RoleInterface
@@ -21,8 +19,6 @@ class Role implements RoleInterface
     private $id;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="role", type="string", unique=true)
      */
     private $role;
@@ -32,31 +28,16 @@ class Role implements RoleInterface
      */
     private $users;
 
-    /**
-     * Constructor
-     */
     public function __construct()
     {
         $this->users = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    /**
-     * Get id
-     *
-     * @return integer
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * Set role
-     *
-     * @param string $role
-     *
-     * @return Role
-     */
     public function setRole($role)
     {
         $this->role = $role;
@@ -64,23 +45,12 @@ class Role implements RoleInterface
         return $this;
     }
 
-    /**
-     * Get role
-     *
-     * @return string
-     */
     public function getRole()
     {
         return $this->role;
     }
 
-    /**
-     * Add user
-     *
-     * @param \AppBundle\Entity\User $user
-     *
-     * @return Role
-     */
+
     public function addUser(\AppBundle\Entity\User $user)
     {
         $this->users[] = $user;
@@ -88,21 +58,11 @@ class Role implements RoleInterface
         return $this;
     }
 
-    /**
-     * Remove user
-     *
-     * @param \AppBundle\Entity\User $user
-     */
     public function removeUser(\AppBundle\Entity\User $user)
     {
         $this->users->removeElement($user);
     }
 
-    /**
-     * Get users
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
     public function getUsers()
     {
         return $this->users;

@@ -3,11 +3,10 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Material
- *
- * @ORM\Table(name="material")
+ * @ORM\Table(name="materials")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\MaterialRepository")
  */
 class Material
@@ -40,7 +39,8 @@ class Material
     private $link;
 
     /**
-     * @ORM\Column(name="file", type="binary", nullable=true)
+     * @ORM\Column(name="file", type="string", nullable=true)
+     * @Assert\File(maxSize="50Mi")
      */
     private $file;
 
@@ -73,32 +73,19 @@ class Material
      */
     private $restriction;
 
-    /**
-     * Constructor
-     */
+
     public function __construct()
     {
         $this->users = new \Doctrine\Common\Collections\ArrayCollection();
         $this->comments = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->date = new \DateTime();
     }
 
-    /**
-     * Get id
-     *
-     * @return integer
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return Material
-     */
     public function setName($name)
     {
         $this->name = $name;
@@ -106,23 +93,11 @@ class Material
         return $this;
     }
 
-    /**
-     * Get name
-     *
-     * @return string
-     */
     public function getName()
     {
         return $this->name;
     }
 
-    /**
-     * Set content
-     *
-     * @param string $content
-     *
-     * @return Material
-     */
     public function setContent($content)
     {
         $this->content = $content;
@@ -130,23 +105,11 @@ class Material
         return $this;
     }
 
-    /**
-     * Get content
-     *
-     * @return string
-     */
     public function getContent()
     {
         return $this->content;
     }
 
-    /**
-     * Set otherAuthors
-     *
-     * @param string $otherAuthors
-     *
-     * @return Material
-     */
     public function setOtherAuthors($otherAuthors)
     {
         $this->otherAuthors = $otherAuthors;
@@ -154,23 +117,11 @@ class Material
         return $this;
     }
 
-    /**
-     * Get otherAuthors
-     *
-     * @return string
-     */
     public function getOtherAuthors()
     {
         return $this->otherAuthors;
     }
 
-    /**
-     * Set link
-     *
-     * @param string $link
-     *
-     * @return Material
-     */
     public function setLink($link)
     {
         $this->link = $link;
@@ -178,47 +129,22 @@ class Material
         return $this;
     }
 
-    /**
-     * Get link
-     *
-     * @return string
-     */
     public function getLink()
     {
         return $this->link;
     }
 
-    /**
-     * Set file
-     *
-     * @param binary $file
-     *
-     * @return Material
-     */
     public function setFile($file)
     {
         $this->file = $file;
-
         return $this;
     }
 
-    /**
-     * Get file
-     *
-     * @return binary
-     */
     public function getFile()
     {
         return $this->file;
     }
 
-    /**
-     * Set date
-     *
-     * @param \DateTime $date
-     *
-     * @return Material
-     */
     public function setDate($date)
     {
         $this->date = $date;
@@ -226,23 +152,12 @@ class Material
         return $this;
     }
 
-    /**
-     * Get date
-     *
-     * @return \DateTime
-     */
     public function getDate()
     {
         return $this->date;
     }
 
-    /**
-     * Add user
-     *
-     * @param \AppBundle\Entity\User $user
-     *
-     * @return Material
-     */
+
     public function addUser(\AppBundle\Entity\User $user)
     {
         $this->users[] = $user;
@@ -250,33 +165,16 @@ class Material
         return $this;
     }
 
-    /**
-     * Remove user
-     *
-     * @param \AppBundle\Entity\User $user
-     */
     public function removeUser(\AppBundle\Entity\User $user)
     {
         $this->users->removeElement($user);
     }
 
-    /**
-     * Get users
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
     public function getUsers()
     {
         return $this->users;
     }
 
-    /**
-     * Add comment
-     *
-     * @param \AppBundle\Entity\Comment $comment
-     *
-     * @return Material
-     */
     public function addComment(\AppBundle\Entity\Comment $comment)
     {
         $this->comments[] = $comment;
@@ -284,33 +182,16 @@ class Material
         return $this;
     }
 
-    /**
-     * Remove comment
-     *
-     * @param \AppBundle\Entity\Comment $comment
-     */
     public function removeComment(\AppBundle\Entity\Comment $comment)
     {
         $this->comments->removeElement($comment);
     }
 
-    /**
-     * Get comments
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
     public function getComments()
     {
         return $this->comments;
     }
 
-    /**
-     * Set category
-     *
-     * @param \AppBundle\Entity\Category $category
-     *
-     * @return Material
-     */
     public function setCategory(\AppBundle\Entity\Category $category = null)
     {
         $this->category = $category;
@@ -318,23 +199,11 @@ class Material
         return $this;
     }
 
-    /**
-     * Get category
-     *
-     * @return \AppBundle\Entity\Category
-     */
     public function getCategory()
     {
         return $this->category;
     }
 
-    /**
-     * Set restriction
-     *
-     * @param \AppBundle\Entity\Restriction $restriction
-     *
-     * @return Material
-     */
     public function setRestriction(\AppBundle\Entity\Restriction $restriction = null)
     {
         $this->restriction = $restriction;
@@ -342,11 +211,6 @@ class Material
         return $this;
     }
 
-    /**
-     * Get restriction
-     *
-     * @return \AppBundle\Entity\Restriction
-     */
     public function getRestriction()
     {
         return $this->restriction;

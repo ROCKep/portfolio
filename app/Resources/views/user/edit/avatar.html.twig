@@ -1,0 +1,17 @@
+{% extends 'user/edit/layout.html.twig' %}
+
+{% block edit_body %}
+    <p>Текущая фотография:</p>
+    <p>
+        {% if user.avatar is null %}
+            <img src="{{ asset('img/avatar.jpg') }}" width="200">
+        {% else %}
+            <img src="{{ asset('uploads/files/' ~ user.avatar.fileName) }}">
+        {% endif %}
+    </p>
+    {{ form_start(form) }}
+    {{ form_row(form.avatar) }}
+    {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+{% endblock %}
+

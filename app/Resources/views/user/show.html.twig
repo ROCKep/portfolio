@@ -1,0 +1,133 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ "#{user.firstName} #{user.lastName}" }}{% endblock %}
+
+{% block header %}{{ "#{user.lastName} #{user.firstName} #{user.middleName}" }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-3" id="left-side">
+            <div id="block-avatar" class="panel panel-default">
+                <div class="panel-body">
+                    {% if user.avatar is null %}
+                    <img src="{{ asset('img/avatar.jpg') }}">
+                    {% else %}
+                    <img src="{{ asset('uploads/files/' ~ user.avatar.fileName) }}">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-9" id="right-side">
+            <div id="block-info" class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Информация о пользователе</h3>
+                </div>
+                <div class="panel-body">
+                    <p><a href="{{ path('user_edit') }}">Редактировать информацию</a></p>
+                    {% if user.degree is not null %}
+                        <div class="row">
+                            <div class="col-sm-3">Степень образования</div>
+                            <div class="col-sm-9">{{ user.degree }}</div>
+                        </div>
+                    {% endif %}
+                    {% if user.dob is not null %}
+                        <div class="row">
+                            <div class="col-sm-3">Дата рождения</div>
+                            <div class="col-sm-9">{{ user.dob|date('d.m.Y') }}</div>
+                        </div>
+                    {% endif %}
+                    {% if user.phone is not null %}
+                        <div class="row">
+                            <div class="col-sm-3">Телефон</div>
+                            <div class="col-sm-9">{{ user.phone }}</div>
+                        </div>
+                    {% endif %}
+                    <div class="row">
+                        <div class="col-sm-3">Электронная почта</div>
+                        <div class="col-sm-9"><a href="mailto:{{ user.email }}">{{ user.email }}</a></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">Дата регистрации</div>
+                        <div class="col-sm-9">{{ user.signupDate|date('d.m.Y') }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="block-student" class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Место учебы</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-3">Факультет</div>
+                        <div class="col-sm-9">{{ user.group.department.faculty.name }} ({{ user.group.department.faculty.abbr }})</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">Кафедра</div>
+                        <div class="col-sm-9">{{ user.group.department.name }} ({{ user.group.department.faculty.abbr ~ user.group.department.number}})</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">Направление</div>
+                        <div class="col-sm-9">{{ user.group.course.name }} ({{ user.group.course.number }})</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">Уровень образования</div>
+                        <div class="col-sm-9">{{ user.group.course.degree }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">Группа</div>
+                        <div class="col-sm-9">{{ user.group.department.faculty.abbr ~ user.group.department.number }}-{{ user.group.semester ~ user.group.number }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="block-jobs" class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Места работы</h3>
+                </div>
+                <div class="panel-body">
+                    <p><a href="{{ path('job_new') }}">Добавить место работы</a></p>
+                    {% if user.jobs|length > 0 %}
+                    <div class="panel-group">
+                        {% for job in user.jobs %}
+                        <div class="block-job panel panel-default">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-3">Организация</div>
+                                    <div class="col-sm-9">{{ job.name }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-3">Должность</div>
+                                    <div class="col-sm-9">{{ job.occupation }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-3">Дата начала</div>
+                                    <div class="col-sm-9">{{ job.startDate|date('d.m.Y') }}</div>
+                                </div>
+                                {% if job.endDate is not null %}
+                                <div class="row">
+                                    <div class="col-sm-3">Дата окончания</div>
+                                    <div class="col-sm-9">{{ job.endDate|date('d.m.Y') }}</div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div id="block-materials" class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Материалы пользователя</h3>
+                </div>
+                <div class="panel-body">
+                    <p><a href="{{ path('cat_show') }}">Просмотреть материалы</a></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

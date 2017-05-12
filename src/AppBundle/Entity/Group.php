@@ -3,11 +3,10 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Group
- *
- * @ORM\Table(name="`group`")
+ * @ORM\Table(name="groups")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\GroupRepository")
  */
 class Group
@@ -25,6 +24,11 @@ class Group
     private $number;
 
     /**
+     * @ORM\Column(name="semester", type="integer", nullable=true)
+     */
+    private $semester;
+
+    /**
      * @ORM\Column(name="start_year", type="date")
      */
     private $startYear;
@@ -34,6 +38,12 @@ class Group
      */
     private $endYear;
 
+
+    /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\User", mappedBy="group")
+     */
+    private $users;
+
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Department", inversedBy="groups")
      * @ORM\JoinColumn(name="department_id", referencedColumnName="id")
@@ -41,41 +51,22 @@ class Group
     private $department;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Student", mappedBy="group")
-     */
-    private $students;
-
-    /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Course", inversedBy="groups")
-     * @ORM\JoinColumn(name="department_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="course_id", referencedColumnName="id")
      */
     private $course;
 
-    /**
-     * Constructor
-     */
+
     public function __construct()
     {
-        $this->students = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    /**
-     * Get id
-     *
-     * @return integer
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * Set number
-     *
-     * @param string $number
-     *
-     * @return Group
-     */
     public function setNumber($number)
     {
         $this->number = $number;
@@ -83,23 +74,21 @@ class Group
         return $this;
     }
 
-    /**
-     * Get number
-     *
-     * @return string
-     */
     public function getNumber()
     {
         return $this->number;
     }
 
-    /**
-     * Set startYear
-     *
-     * @param \DateTime $startYear
-     *
-     * @return Group
-     */
+    public function getSemester()
+    {
+        return $this->semester;
+    }
+
+    public function setSemester($semester)
+    {
+        $this->semester = $semester;
+    }
+
     public function setStartYear($startYear)
     {
         $this->startYear = $startYear;
@@ -107,23 +96,11 @@ class Group
         return $this;
     }
 
-    /**
-     * Get startYear
-     *
-     * @return \DateTime
-     */
     public function getStartYear()
     {
         return $this->startYear;
     }
 
-    /**
-     * Set endYear
-     *
-     * @param \DateTime $endYear
-     *
-     * @return Group
-     */
     public function setEndYear($endYear)
     {
         $this->endYear = $endYear;
@@ -131,23 +108,12 @@ class Group
         return $this;
     }
 
-    /**
-     * Get endYear
-     *
-     * @return \DateTime
-     */
     public function getEndYear()
     {
         return $this->endYear;
     }
 
-    /**
-     * Set department
-     *
-     * @param \AppBundle\Entity\Department $department
-     *
-     * @return Group
-     */
+
     public function setDepartment(\AppBundle\Entity\Department $department = null)
     {
         $this->department = $department;
@@ -155,57 +121,28 @@ class Group
         return $this;
     }
 
-    /**
-     * Get department
-     *
-     * @return \AppBundle\Entity\Department
-     */
     public function getDepartment()
     {
         return $this->department;
     }
 
-    /**
-     * Add student
-     *
-     * @param \AppBundle\Entity\Student $student
-     *
-     * @return Group
-     */
-    public function addStudent(\AppBundle\Entity\Student $student)
+    public function addUser(\AppBundle\Entity\User $user)
     {
-        $this->students[] = $student;
+        $this->users[] = $user;
 
         return $this;
     }
 
-    /**
-     * Remove student
-     *
-     * @param \AppBundle\Entity\Student $student
-     */
-    public function removeStudent(\AppBundle\Entity\Student $student)
+    public function removeUser(\AppBundle\Entity\User $user)
     {
-        $this->students->removeElement($student);
+        $this->users->removeElement($user);
     }
 
-    /**
-     * Get students
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getStudents()
+    public function getUsers()
     {
-        return $this->students;
+        return $this->users;
     }
 
-    /**
-     * Set course
-     *
-     * @param \AppBundle\Entity\Course $course
-     *
-     * @return Group
-     */
     public function setCourse(\AppBundle\Entity\Course $course = null)
     {
         $this->course = $course;
@@ -213,11 +150,6 @@ class Group
         return $this;
     }
 
-    /**
-     * Get course
-     *
-     * @return \AppBundle\Entity\Course
-     */
     public function getCourse()
     {
         return $this->course;

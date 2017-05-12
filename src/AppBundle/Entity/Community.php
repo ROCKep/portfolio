@@ -5,9 +5,7 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Community
- *
- * @ORM\Table(name="community")
+ * @ORM\Table(name="communities")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\CommunityRepository")
  */
 class Community
@@ -34,6 +32,7 @@ class Community
      */
     private $creationDate;
 
+
     /**
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Membership", mappedBy="community")
      */
@@ -43,32 +42,19 @@ class Community
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Category", mappedBy="community")
      */
     private $categories;
-    /**
-     * Constructor
-     */
+
+
     public function __construct()
     {
         $this->memberships = new \Doctrine\Common\Collections\ArrayCollection();
         $this->categories = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    /**
-     * Get id
-     *
-     * @return integer
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return Community
-     */
     public function setName($name)
     {
         $this->name = $name;
@@ -76,23 +62,11 @@ class Community
         return $this;
     }
 
-    /**
-     * Get name
-     *
-     * @return string
-     */
     public function getName()
     {
         return $this->name;
     }
 
-    /**
-     * Set about
-     *
-     * @param string $about
-     *
-     * @return Community
-     */
     public function setAbout($about)
     {
         $this->about = $about;
@@ -100,23 +74,11 @@ class Community
         return $this;
     }
 
-    /**
-     * Get about
-     *
-     * @return string
-     */
     public function getAbout()
     {
         return $this->about;
     }
 
-    /**
-     * Set creationDate
-     *
-     * @param \DateTime $creationDate
-     *
-     * @return Community
-     */
     public function setCreationDate($creationDate)
     {
         $this->creationDate = $creationDate;
@@ -124,23 +86,12 @@ class Community
         return $this;
     }
 
-    /**
-     * Get creationDate
-     *
-     * @return \DateTime
-     */
     public function getCreationDate()
     {
         return $this->creationDate;
     }
 
-    /**
-     * Add membership
-     *
-     * @param \AppBundle\Entity\Membership $membership
-     *
-     * @return Community
-     */
+
     public function addMembership(\AppBundle\Entity\Membership $membership)
     {
         $this->memberships[] = $membership;
@@ -148,33 +99,16 @@ class Community
         return $this;
     }
 
-    /**
-     * Remove membership
-     *
-     * @param \AppBundle\Entity\Membership $membership
-     */
     public function removeMembership(\AppBundle\Entity\Membership $membership)
     {
         $this->memberships->removeElement($membership);
     }
 
-    /**
-     * Get memberships
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
     public function getMemberships()
     {
         return $this->memberships;
     }
 
-    /**
-     * Add category
-     *
-     * @param \AppBundle\Entity\Category $category
-     *
-     * @return Community
-     */
     public function addCategory(\AppBundle\Entity\Category $category)
     {
         $this->categories[] = $category;
@@ -182,21 +116,11 @@ class Community
         return $this;
     }
 
-    /**
-     * Remove category
-     *
-     * @param \AppBundle\Entity\Category $category
-     */
     public function removeCategory(\AppBundle\Entity\Category $category)
     {
         $this->categories->removeElement($category);
     }
 
-    /**
-     * Get categories
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
     public function getCategories()
     {
         return $this->categories;

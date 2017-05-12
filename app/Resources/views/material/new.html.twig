@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+{% block title %}Добавление материала{% endblock %}
+{% block header %}Добавление материала{% endblock %}
+{% block body %}
+    {{ form_start(form) }}
+        {{ form_row(form.name) }}
+        {{ form_row(form.content) }}
+        {{ form_row(form.link) }}
+        {{ form_row(form.file) }}
+        {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+{% endblock %}

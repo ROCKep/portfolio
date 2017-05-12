@@ -8,12 +8,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * User
- *
- * @ORM\Table(name="`user`")
+ * @ORM\Table(name="users")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
- * @UniqueEntity(fields="email", message="Email already taken")
- * @UniqueEntity(fields="username", message="Username already taken")
+ * @UniqueEntity(fields="email", message="Электронная почта уже занята")
+ * @UniqueEntity(fields="username", message="Логин уже занят")
  */
 class User implements AdvancedUserInterface, \Serializable
 {
@@ -60,13 +58,13 @@ class User implements AdvancedUserInterface, \Serializable
 
     /**
      * @ORM\Column(name="username", type="string", unique=true)
-     * @Assert\NotBlank()
+     * @Assert\NotBlank(groups={"registration"})
      */
     private $username;
 
     /**
-     * @Assert\NotBlank()
-     * @Assert\Length(max="4096")
+     * @Assert\NotBlank(groups={"registration"})
+     * @Assert\Length(max="4096", groups={"registration"})
      */
     private $plainPassword;
 
@@ -82,10 +80,25 @@ class User implements AdvancedUserInterface, \Serializable
     private $isActive;
 
     /**
-     * @ORM\Column(name="signup_date", type = "date")
+     * @ORM\Column(name="signup_date", type="date")
      */
     private $signupDate;
 
+    /**
+     * @ORM\Column(name="student_number", type="string", nullable=true)
+     */
+    private $studentNumber;
+
+    /**
+     * @ORM\Column(name="degree", type="string", nullable=true)
+     */
+    private $degree;
+
+    /**
+     * @ORM\Column(name="avatar", type="string", nullable=true)
+     * @Assert\File(mimeTypes={ "image/jpeg" }, maxSize="5Mi")
+     */
+    private $avatar;
 
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Role", inversedBy="users")
@@ -94,14 +107,10 @@ class User implements AdvancedUserInterface, \Serializable
     private $role;
 
     /**
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Student", mappedBy="user")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Group", inversedBy="users")
+     * @ORM\JoinColumn(name="group_id", referencedColumnName="id")
      */
-    private $student;
-
-    /**
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Teacher", mappedBy="user")
-     */
-    private $teacher;
+    private $group;
 
     /**
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Job", mappedBy="user")
@@ -138,11 +147,18 @@ class User implements AdvancedUserInterface, \Serializable
      */
     private $categories;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Restriction", inversedBy="users")
-     * @ORM\JoinColumn(name="restriction_id", referencedColumnName="id")
-     */
-    private $restriction;
+    public function __construct()
+    {
+        $this->jobs = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->messagesSent = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->messagesReceived = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->materials = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->comments = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->categories = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->memberships = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->isActive = false;
+        $this->signupDate = new \DateTime();
+    }
 
     public function getPlainPassword()
     {
@@ -205,41 +221,14 @@ class User implements AdvancedUserInterface, \Serializable
 
     public function isEnabled()
     {
-        return $this->isActive;
+        return true;
     }
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->jobs = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->messagesSent = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->messagesReceived = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->materials = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->comments = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->categories = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->memberships = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->isActive = true;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * Set firstName
-     *
-     * @param string $firstName
-     *
-     * @return User
-     */
     public function setFirstName($firstName)
     {
         $this->firstName = $firstName;
@@ -247,23 +236,11 @@ class User implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
-    /**
-     * Get firstName
-     *
-     * @return string
-     */
     public function getFirstName()
     {
         return $this->firstName;
     }
 
-    /**
-     * Set middleName
-     *
-     * @param string $middleName
-     *
-     * @return User
-     */
     public function setMiddleName($middleName)
     {
         $this->middleName = $middleName;
@@ -271,23 +248,11 @@ class User implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
-    /**
-     * Get middleName
-     *
-     * @return string
-     */
     public function getMiddleName()
     {
         return $this->middleName;
     }
 
-    /**
-     * Set lastName
-     *
-     * @param string $lastName
-     *
-     * @return User
-     */
     public function setLastName($lastName)
     {
         $this->lastName = $lastName;
@@ -295,23 +260,11 @@ class User implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
-    /**
-     * Get lastName
-     *
-     * @return string
-     */
     public function getLastName()
     {
         return $this->lastName;
     }
 
-    /**
-     * Set dob
-     *
-     * @param \DateTime $dob
-     *
-     * @return User
-     */
     public function setDob($dob)
     {
         $this->dob = $dob;
@@ -319,23 +272,11 @@ class User implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
-    /**
-     * Get dob
-     *
-     * @return \DateTime
-     */
     public function getDob()
     {
         return $this->dob;
     }
 
-    /**
-     * Set phone
-     *
-     * @param string $phone
-     *
-     * @return User
-     */
     public function setPhone($phone)
     {
         $this->phone = $phone;
@@ -343,23 +284,11 @@ class User implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
-    /**
-     * Get phone
-     *
-     * @return string
-     */
     public function getPhone()
     {
         return $this->phone;
     }
 
-    /**
-     * Set email
-     *
-     * @param string $email
-     *
-     * @return User
-     */
     public function setEmail($email)
     {
         $this->email = $email;
@@ -367,23 +296,11 @@ class User implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
-    /**
-     * Get email
-     *
-     * @return string
-     */
     public function getEmail()
     {
         return $this->email;
     }
 
-    /**
-     * Set username
-     *
-     * @param string $username
-     *
-     * @return User
-     */
     public function setUsername($username)
     {
         $this->username = $username;
@@ -391,23 +308,11 @@ class User implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
-    /**
-     * Get username
-     *
-     * @return string
-     */
     public function getUsername()
     {
         return $this->username;
     }
 
-    /**
-     * Set password
-     *
-     * @param string $password
-     *
-     * @return User
-     */
     public function setPassword($password)
     {
         $this->password = $password;
@@ -415,23 +320,11 @@ class User implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
-    /**
-     * Get password
-     *
-     * @return string
-     */
     public function getPassword()
     {
         return $this->password;
     }
 
-    /**
-     * Set isActive
-     *
-     * @param boolean $isActive
-     *
-     * @return User
-     */
     public function setIsActive($isActive)
     {
         $this->isActive = $isActive;
@@ -439,23 +332,11 @@ class User implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
-    /**
-     * Get isActive
-     *
-     * @return boolean
-     */
     public function getIsActive()
     {
         return $this->isActive;
     }
 
-    /**
-     * Set signupDate
-     *
-     * @param \DateTime $signupDate
-     *
-     * @return User
-     */
     public function setSignupDate($signupDate)
     {
         $this->signupDate = $signupDate;
@@ -463,23 +344,42 @@ class User implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
-    /**
-     * Get signupDate
-     *
-     * @return \DateTime
-     */
     public function getSignupDate()
     {
         return $this->signupDate;
     }
 
-    /**
-     * Set role
-     *
-     * @param \AppBundle\Entity\Role $role
-     *
-     * @return User
-     */
+    public function getStudentNumber()
+    {
+        return $this->studentNumber;
+    }
+
+    public function setStudentNumber($studentNumber)
+    {
+        $this->studentNumber = $studentNumber;
+    }
+
+    public function getDegree()
+    {
+        return $this->degree;
+    }
+
+    public function setDegree($degree)
+    {
+        $this->degree = $degree;
+    }
+
+    public function getAvatar()
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar($avatar)
+    {
+        $this->avatar = $avatar;
+    }
+
+
     public function setRole(\AppBundle\Entity\Role $role = null)
     {
         $this->role = $role;
@@ -487,71 +387,22 @@ class User implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
-    /**
-     * Get role
-     *
-     * @return \AppBundle\Entity\Role
-     */
     public function getRole()
     {
         return $this->role;
     }
 
-    /**
-     * Set student
-     *
-     * @param \AppBundle\Entity\Student $student
-     *
-     * @return User
-     */
-    public function setStudent(\AppBundle\Entity\Student $student = null)
+    public function setGroup(\AppBundle\Entity\Group $group = null)
     {
-        $this->student = $student;
-
+        $this->group = $group;
         return $this;
     }
 
-    /**
-     * Get student
-     *
-     * @return \AppBundle\Entity\Student
-     */
-    public function getStudent()
+    public function getGroup()
     {
-        return $this->student;
+        return $this->group;
     }
 
-    /**
-     * Set teacher
-     *
-     * @param \AppBundle\Entity\Teacher $teacher
-     *
-     * @return User
-     */
-    public function setTeacher(\AppBundle\Entity\Teacher $teacher = null)
-    {
-        $this->teacher = $teacher;
-
-        return $this;
-    }
-
-    /**
-     * Get teacher
-     *
-     * @return \AppBundle\Entity\Teacher
-     */
-    public function getTeacher()
-    {
-        return $this->teacher;
-    }
-
-    /**
-     * Add job
-     *
-     * @param \AppBundle\Entity\Job $job
-     *
-     * @return User
-     */
     public function addJob(\AppBundle\Entity\Job $job)
     {
         $this->jobs[] = $job;
@@ -559,33 +410,16 @@ class User implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
-    /**
-     * Remove job
-     *
-     * @param \AppBundle\Entity\Job $job
-     */
     public function removeJob(\AppBundle\Entity\Job $job)
     {
         $this->jobs->removeElement($job);
     }
 
-    /**
-     * Get jobs
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
     public function getJobs()
     {
         return $this->jobs;
     }
 
-    /**
-     * Add messagesSent
-     *
-     * @param \AppBundle\Entity\Message $messagesSent
-     *
-     * @return User
-     */
     public function addMessagesSent(\AppBundle\Entity\Message $messagesSent)
     {
         $this->messagesSent[] = $messagesSent;
@@ -593,33 +427,16 @@ class User implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
-    /**
-     * Remove messagesSent
-     *
-     * @param \AppBundle\Entity\Message $messagesSent
-     */
     public function removeMessagesSent(\AppBundle\Entity\Message $messagesSent)
     {
         $this->messagesSent->removeElement($messagesSent);
     }
 
-    /**
-     * Get messagesSent
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
     public function getMessagesSent()
     {
         return $this->messagesSent;
     }
 
-    /**
-     * Add messagesReceived
-     *
-     * @param \AppBundle\Entity\Message $messagesReceived
-     *
-     * @return User
-     */
     public function addMessagesReceived(\AppBundle\Entity\Message $messagesReceived)
     {
         $this->messagesReceived[] = $messagesReceived;
@@ -627,33 +444,16 @@ class User implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
-    /**
-     * Remove messagesReceived
-     *
-     * @param \AppBundle\Entity\Message $messagesReceived
-     */
     public function removeMessagesReceived(\AppBundle\Entity\Message $messagesReceived)
     {
         $this->messagesReceived->removeElement($messagesReceived);
     }
 
-    /**
-     * Get messagesReceived
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
     public function getMessagesReceived()
     {
         return $this->messagesReceived;
     }
 
-    /**
-     * Add material
-     *
-     * @param \AppBundle\Entity\Material $material
-     *
-     * @return User
-     */
     public function addMaterial(\AppBundle\Entity\Material $material)
     {
         $this->materials[] = $material;
@@ -661,33 +461,16 @@ class User implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
-    /**
-     * Remove material
-     *
-     * @param \AppBundle\Entity\Material $material
-     */
     public function removeMaterial(\AppBundle\Entity\Material $material)
     {
         $this->materials->removeElement($material);
     }
 
-    /**
-     * Get materials
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
     public function getMaterials()
     {
         return $this->materials;
     }
 
-    /**
-     * Add comment
-     *
-     * @param \AppBundle\Entity\Comment $comment
-     *
-     * @return User
-     */
     public function addComment(\AppBundle\Entity\Comment $comment)
     {
         $this->comments[] = $comment;
@@ -695,33 +478,16 @@ class User implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
-    /**
-     * Remove comment
-     *
-     * @param \AppBundle\Entity\Comment $comment
-     */
     public function removeComment(\AppBundle\Entity\Comment $comment)
     {
         $this->comments->removeElement($comment);
     }
 
-    /**
-     * Get comments
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
     public function getComments()
     {
         return $this->comments;
     }
 
-    /**
-     * Add category
-     *
-     * @param \AppBundle\Entity\Category $category
-     *
-     * @return User
-     */
     public function addCategory(\AppBundle\Entity\Category $category)
     {
         $this->categories[] = $category;
@@ -729,57 +495,16 @@ class User implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
-    /**
-     * Remove category
-     *
-     * @param \AppBundle\Entity\Category $category
-     */
     public function removeCategory(\AppBundle\Entity\Category $category)
     {
         $this->categories->removeElement($category);
     }
 
-    /**
-     * Get categories
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
     public function getCategories()
     {
         return $this->categories;
     }
 
-    /**
-     * Set restriction
-     *
-     * @param \AppBundle\Entity\Restriction $restriction
-     *
-     * @return User
-     */
-    public function setRestriction(\AppBundle\Entity\Restriction $restriction = null)
-    {
-        $this->restriction = $restriction;
-
-        return $this;
-    }
-
-    /**
-     * Get restriction
-     *
-     * @return \AppBundle\Entity\Restriction
-     */
-    public function getRestriction()
-    {
-        return $this->restriction;
-    }
-
-    /**
-     * Add membership
-     *
-     * @param \AppBundle\Entity\Membership $membership
-     *
-     * @return User
-     */
     public function addMembership(\AppBundle\Entity\Membership $membership)
     {
         $this->memberships[] = $membership;
@@ -787,21 +512,11 @@ class User implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
-    /**
-     * Remove membership
-     *
-     * @param \AppBundle\Entity\Membership $membership
-     */
     public function removeMembership(\AppBundle\Entity\Membership $membership)
     {
         $this->memberships->removeElement($membership);
     }
 
-    /**
-     * Get memberships
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
     public function getMemberships()
     {
         return $this->memberships;

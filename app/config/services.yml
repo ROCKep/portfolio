@@ -7,3 +7,16 @@ services:
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+    app.file_uploader:
+        class: AppBundle\Service\FileUploader
+        arguments: ['%files_directory%']
+    app.image_resizer:
+        class: AppBundle\Service\ImageResizer
+        arguments: []
+    app.doctrine_file_listener:
+        class: AppBundle\EventListener\FileUploadListener
+        arguments: ['@app.file_uploader', '@app.image_resizer']
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+            - { name: doctrine.event_listener, event: preUpdate }
+            - { name: doctrine.event_listener, event: postLoad }

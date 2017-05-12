@@ -1,0 +1,30 @@
+html {
+    position: relative;
+    min-height: 100%;
+}
+body {
+    background: #dadada;
+    margin-bottom: 60px;
+}
+.content {
+    background: white;
+}
+
+label.required:after {
+    content: " *";
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 30px;
+}
+
+    /*#block-avatar {*/
+        /*width: 250px;*/
+    /*}*/
+
+img {
+    max-width: 100%;
+}

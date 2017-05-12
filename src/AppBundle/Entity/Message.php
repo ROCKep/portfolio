@@ -5,9 +5,7 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Message
- *
- * @ORM\Table(name="message")
+ * @ORM\Table(name="messages")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\MessageRepository")
  */
 class Message
@@ -30,6 +28,11 @@ class Message
     private $time;
 
     /**
+     * @ORM\Column(name="has_been_read", type="boolean")
+     */
+    private $hasBeenRead;
+
+    /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="messagesSent")
      * @ORM\JoinColumn(name="sender_id", referencedColumnName="id")
      */
@@ -42,23 +45,11 @@ class Message
     private $receiver;
 
 
-    /**
-     * Get id
-     *
-     * @return integer
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * Set content
-     *
-     * @param string $content
-     *
-     * @return Message
-     */
     public function setContent($content)
     {
         $this->content = $content;
@@ -66,23 +57,11 @@ class Message
         return $this;
     }
 
-    /**
-     * Get content
-     *
-     * @return string
-     */
     public function getContent()
     {
         return $this->content;
     }
 
-    /**
-     * Set time
-     *
-     * @param \DateTime $time
-     *
-     * @return Message
-     */
     public function setTime($time)
     {
         $this->time = $time;
@@ -90,23 +69,11 @@ class Message
         return $this;
     }
 
-    /**
-     * Get time
-     *
-     * @return \DateTime
-     */
     public function getTime()
     {
         return $this->time;
     }
 
-    /**
-     * Set sender
-     *
-     * @param \AppBundle\Entity\User $sender
-     *
-     * @return Message
-     */
     public function setSender(\AppBundle\Entity\User $sender = null)
     {
         $this->sender = $sender;
@@ -114,23 +81,11 @@ class Message
         return $this;
     }
 
-    /**
-     * Get sender
-     *
-     * @return \AppBundle\Entity\User
-     */
     public function getSender()
     {
         return $this->sender;
     }
 
-    /**
-     * Set receiver
-     *
-     * @param \AppBundle\Entity\User $receiver
-     *
-     * @return Message
-     */
     public function setReceiver(\AppBundle\Entity\User $receiver = null)
     {
         $this->receiver = $receiver;
@@ -138,13 +93,20 @@ class Message
         return $this;
     }
 
-    /**
-     * Get receiver
-     *
-     * @return \AppBundle\Entity\User
-     */
     public function getReceiver()
     {
         return $this->receiver;
+    }
+
+    public function setHasBeenRead($hasBeenRead)
+    {
+        $this->hasBeenRead = $hasBeenRead;
+
+        return $this;
+    }
+
+    public function getHasBeenRead()
+    {
+        return $this->hasBeenRead;
     }
 }

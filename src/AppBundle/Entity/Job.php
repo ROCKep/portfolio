@@ -5,9 +5,7 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Job
- *
- * @ORM\Table(name="job")
+ * @ORM\Table(name="jobs")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\JobRepository")
  */
 class Job
@@ -30,14 +28,15 @@ class Job
     private $occupation;
 
     /**
-     * @ORM\Column(name="start_year", type="date")
+     * @ORM\Column(name="start_date", type="date")
      */
-    private $startYear;
+    private $startDate;
 
     /**
-     * @ORM\Column(name="end_year", type="date", nullable=true)
+     * @ORM\Column(name="end_date", type="date", nullable=true)
      */
-    private $endYear;
+    private $endDate;
+
 
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="jobs")
@@ -46,23 +45,11 @@ class Job
     private $user;
 
 
-    /**
-     * Get id
-     *
-     * @return integer
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return Job
-     */
     public function setName($name)
     {
         $this->name = $name;
@@ -70,23 +57,11 @@ class Job
         return $this;
     }
 
-    /**
-     * Get name
-     *
-     * @return string
-     */
     public function getName()
     {
         return $this->name;
     }
 
-    /**
-     * Set occupation
-     *
-     * @param string $occupation
-     *
-     * @return Job
-     */
     public function setOccupation($occupation)
     {
         $this->occupation = $occupation;
@@ -94,71 +69,35 @@ class Job
         return $this;
     }
 
-    /**
-     * Get occupation
-     *
-     * @return string
-     */
     public function getOccupation()
     {
         return $this->occupation;
     }
 
-    /**
-     * Set startYear
-     *
-     * @param \DateTime $startYear
-     *
-     * @return Job
-     */
-    public function setStartYear($startYear)
+    public function setStartDate($startDate)
     {
-        $this->startYear = $startYear;
+        $this->startDate = $startDate;
 
         return $this;
     }
 
-    /**
-     * Get startYear
-     *
-     * @return \DateTime
-     */
-    public function getStartYear()
+    public function getStartDate()
     {
-        return $this->startYear;
+        return $this->startDate;
     }
 
-    /**
-     * Set endYear
-     *
-     * @param \DateTime $endYear
-     *
-     * @return Job
-     */
-    public function setEndYear($endYear)
+    public function setEndDate($endDate)
     {
-        $this->endYear = $endYear;
+        $this->endDate = $endDate;
 
         return $this;
     }
 
-    /**
-     * Get endYear
-     *
-     * @return \DateTime
-     */
-    public function getEndYear()
+    public function getEndDate()
     {
-        return $this->endYear;
+        return $this->endDate;
     }
 
-    /**
-     * Set user
-     *
-     * @param \AppBundle\Entity\User $user
-     *
-     * @return Job
-     */
     public function setUser(\AppBundle\Entity\User $user = null)
     {
         $this->user = $user;
@@ -166,11 +105,6 @@ class Job
         return $this;
     }
 
-    /**
-     * Get user
-     *
-     * @return \AppBundle\Entity\User
-     */
     public function getUser()
     {
         return $this->user;
