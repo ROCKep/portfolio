@@ -29,7 +29,7 @@
             <div class="collapse navbar-collapse" id="navbar">
                 <ul class="nav navbar-nav">
                     <li><a href="{{ path('homepage') }}">Главная</a></li>
-                    <li><a href="#{#{{ path('search') }}#}">Поиск</a></li>
+                    <li><a href="{{ path('search') }}">Поиск</a></li>
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">
@@ -37,13 +37,26 @@
                     <li><a href="{{ path('login') }}">Войти</a></li>
                     <li><a href="{{ path('signup') }}">Зарегистрироваться</a></li>
                 {% else %}
+                    {% if is_granted('ROLE_USER') %}
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ app.user.firstName }} {{ app.user.lastName }} <span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            {{ app.user.student.lastName }} {{ app.user.student.firstName }} <span class="caret"></span>
+                        </a>
                         <ul class="dropdown-menu">
-                            <li><a href="{{ path('user_show') }}">Перейти на страницу</a></li>
+                            <li><a href="{{ path('student_show') }}">Перейти на страницу</a></li>
+                            <li><a href="{{ path('message_chats') }}">Просмотреть беседы</a></li>
                             <li><a href="{{ path('logout') }}">Выйти</a></li>
                         </ul>
                     </li>
+                    {% elseif is_granted('ROLE_ADMIN') %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Администратор <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ path('admin_panel') }}">Открыть панель администратора</a></li>
+                            <li><a href="{{ path('logout') }}">Выйти</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
                 {% endif %}
                 </ul>
             </div>
@@ -63,16 +76,10 @@
     </div>
     <div class="container content">
         <div class="page-header">
-            <h1>{% block header %}{% endblock %}</h1>
+            <h2>{% block header %}{% endblock %}</h2>
         </div>
         {% block body %}{% endblock %}
     </div>
-
-    <footer class="footer">
-        <div class="container">
-            <p class="text-muted">Footer</p>
-        </div>
-    </footer>
 
     {% block javascript %}
         <script type="text/javascript" src="{{ asset('assets/vendor/jquery/dist/jquery.js') }}"></script>

@@ -3,7 +3,7 @@ html {
     min-height: 100%;
 }
 body {
-    background: #dadada;
+    background: #e2e2e2;
     margin-bottom: 60px;
 }
 .content {
@@ -19,12 +19,4 @@ label.required:after {
     bottom: 0;
     width: 100%;
     height: 30px;
-}
-
-    /*#block-avatar {*/
-        /*width: 250px;*/
-    /*}*/
-
-img {
-    max-width: 100%;
 }

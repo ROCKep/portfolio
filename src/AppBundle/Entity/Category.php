@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -29,45 +30,41 @@ class Category
 
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="categories")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Student", inversedBy="categories")
      */
-    private $user;
+    private $student;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Community", inversedBy="categories")
-     * @ORM\JoinColumn(name="community_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Community", inversedBy="categories")
+     * @ORM\JoinColumn(onDelete="SET NULL")
      */
     private $community;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Material", mappedBy="category")
+     * @ORM\OneToMany(targetEntity="Material", mappedBy="category", cascade={"remove"})
      */
     private $materials;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Restriction", inversedBy="categories")
-     * @ORM\JoinColumn(name="restriction_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Restriction")
      */
     private $restriction;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Category", mappedBy="parent")
+     * @ORM\OneToMany(targetEntity="Category", mappedBy="parent", cascade={"remove"})
      */
     private $children;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Category", inversedBy="children")
-     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Category", inversedBy="children")
      */
     private $parent;
 
 
     public function __construct()
     {
-        $this->materials = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->createdDate = new \DateTime();
+        $this->materials = new ArrayCollection();
+        $this->children = new ArrayCollection();
     }
 
     public function getId()
@@ -78,8 +75,6 @@ class Category
     public function setName($name)
     {
         $this->name = $name;
-
-        return $this;
     }
 
     public function getName()
@@ -92,29 +87,25 @@ class Category
         return $this->createdDate;
     }
 
-    public function setCreatedDate($createdDate)
+    public function setCreatedDate()
     {
-        $this->createdDate = $createdDate;
+        $this->createdDate = new \DateTime();
     }
 
 
-    public function setUser(\AppBundle\Entity\User $user = null)
+    public function setStudent(Student $student = null)
     {
-        $this->user = $user;
-
-        return $this;
+        $this->student = $student;
     }
 
-    public function getUser()
+    public function getStudent()
     {
-        return $this->user;
+        return $this->student;
     }
 
-    public function setCommunity(\AppBundle\Entity\Community $community = null)
+    public function setCommunity(Community $community = null)
     {
         $this->community = $community;
-
-        return $this;
     }
 
     public function getCommunity()
@@ -122,14 +113,12 @@ class Category
         return $this->community;
     }
 
-    public function addMaterial(\AppBundle\Entity\Material $material)
+    public function addMaterial(Material $material)
     {
         $this->materials[] = $material;
-
-        return $this;
     }
 
-    public function removeMaterial(\AppBundle\Entity\Material $material)
+    public function removeMaterial(Material $material)
     {
         $this->materials->removeElement($material);
     }
@@ -139,11 +128,9 @@ class Category
         return $this->materials;
     }
 
-    public function setRestriction(\AppBundle\Entity\Restriction $restriction = null)
+    public function setRestriction(Restriction $restriction = null)
     {
         $this->restriction = $restriction;
-
-        return $this;
     }
 
     public function getRestriction()
@@ -151,14 +138,12 @@ class Category
         return $this->restriction;
     }
 
-    public function addChild(\AppBundle\Entity\Category $child)
+    public function addChild(Category $child)
     {
         $this->children[] = $child;
-
-        return $this;
     }
 
-    public function removeChild(\AppBundle\Entity\Category $child)
+    public function removeChild(Category $child)
     {
         $this->children->removeElement($child);
     }
@@ -168,11 +153,9 @@ class Category
         return $this->children;
     }
 
-    public function setParent(\AppBundle\Entity\Category $parent = null)
+    public function setParent(Category $parent = null)
     {
         $this->parent = $parent;
-
-        return $this;
     }
 
     public function getParent()

@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Студенты {{ group.department.faculty.abbr ~ group.department.number }}-{{ group.semester ~ group.number}}{% endblock %}
+{% block header %}Студенты {{ group.department.faculty.abbr ~ group.department.number }}-{{ group.semester ~ group.number}}{% endblock %}
+
+{% block body %}
+    <p><a href="{{ path('groups_list', {'id': group.department.id}) }}">Вернуться к списку групп</a></p>
+    {% if group.students|length > 0 %}
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>ФИО</th>
+            <th>E-mail</th>
+            <th>Логин</th>
+            <th>Номер студ. билета</th>
+            <th>Дата регистрации</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for student in group.students %}
+            <tr>
+                <td>
+                    <a href="{{ path('student_show', {'id': student.id}) }}">
+                        {{ student.lastName }} {{ student.firstName }} {{ student.middleName }}
+                    </a>
+                </td>
+                <td><a href="mailto:{{ student.email }}">{{ student.email }}</a></td>
+                <td>{{ student.account.username }}</td>
+                <td>{{ student.number }}</td>
+                <td>{{ student.signupDate|date('d.m.Y') }}</td>
+                <td>
+                    <ul><li><a href="{{ path('admin_student_delete', {'id': student.id}) }}">Удалить</a></li></ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Пусто</p>
+    {% endif %}
+{% endblock %}

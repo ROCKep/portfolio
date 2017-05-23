@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -30,19 +31,18 @@ class Department
 
     /**
      * @ORM\ManyToOne(targetEntity="Faculty", inversedBy="departments")
-     * @ORM\JoinColumn(name="faculty_id", referencedColumnName="id")
      */
     private $faculty;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Group", mappedBy="department")
+     * @ORM\OneToMany(targetEntity="Group", mappedBy="department", cascade={"remove"})
      */
     private $groups;
 
 
     public function __construct()
     {
-        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->groups = new ArrayCollection();
     }
 
     public function getId()
@@ -53,7 +53,6 @@ class Department
     public function setName($name)
     {
         $this->name = $name;
-        return $this;
     }
 
     public function getName()
@@ -64,7 +63,6 @@ class Department
     public function setNumber($number)
     {
         $this->number = $number;
-        return $this;
     }
 
     public function getNumber()
@@ -73,10 +71,9 @@ class Department
     }
 
 
-    public function setFaculty(\AppBundle\Entity\Faculty $faculty = null)
+    public function setFaculty(Faculty $faculty = null)
     {
         $this->faculty = $faculty;
-        return $this;
     }
 
     public function getFaculty()
@@ -84,13 +81,12 @@ class Department
         return $this->faculty;
     }
 
-    public function addGroup(\AppBundle\Entity\Group $group)
+    public function addGroup(Group $group)
     {
         $this->groups[] = $group;
-        return $this;
     }
 
-    public function removeGroup(\AppBundle\Entity\Group $group)
+    public function removeGroup(Group $group)
     {
         $this->groups->removeElement($group);
     }

@@ -16,13 +16,13 @@ class CategoryType extends AbstractType
     {
         $builder
             ->add('name',TextType::class, array('label' => "Имя категории"))
-            ->add('restriction', EntityType::class, array(
-                'label' => 'Права доступа',
-                'class' => 'AppBundle\Entity\Restriction',
-                'choice_label' => 'name',
-                'placeholder' => 'Видно всем',
-                'required' => false,
-            ))
+//            ->add('restriction', EntityType::class, array(
+//                'label' => 'Права доступа',
+//                'class' => 'AppBundle\Entity\Restriction',
+//                'choice_label' => 'name',
+//                'placeholder' => 'Видно всем',
+//                'required' => false
+//            ))
             ->add('submit', SubmitType::class, array('label' => 'Сохранить'))
         ;
     }
@@ -30,10 +30,5 @@ class CategoryType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array('data_class' => Category::class));
-    }
-
-    public function getBlockPrefix()
-    {
-        return 'app_bundle_category_type';
     }
 }

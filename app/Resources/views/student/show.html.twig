@@ -1,0 +1,156 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{student.lastName}} {{student.firstName}}{% endblock %}
+{% block stylesheet %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/student_page.css') }}">
+{% endblock %}
+
+{% block header %}{{student.lastName}} {{student.firstName}} {{student.middleName}}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-3" id="left-side">
+            <div id="block-avatar" class="panel panel-default">
+                <div class="panel-body">
+                    {% if student.avatar is null %}
+                    <img src="{{ asset('img/avatar.jpg') }}">
+                    {% else %}
+                    <a href="{{ asset('uploads/files/' ~ student.avatar.original.path) }}">
+                        <img src="{{ asset('uploads/files/' ~ student.avatar.thumbnail.path) }}"
+                             alt="{{ student.avatar.thumbnail.name }}">
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+            <div class="list-group">
+                {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('student_edit', {'id': student.id}) }}" class="list-group-item">Редактировать информацию</a>
+                {% elseif app.user.student.id == student.id %}
+                <a href="{{ path('student_edit', {'id': student.id}) }}" class="list-group-item">Редактировать информацию</a>
+                <a href="{{ path('job_new') }}" class="list-group-item">Добавить место работы</a>
+                {% else %}
+                <a href="{{ path('message_new', {'id': student.id}) }}" class="list-group-item">Отправить сообщение</a>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="list-group">
+                <a href="{{ path('cat_show', {'id': root_category.id}) }}" class="list-group-item">Просмотреть материалы</a>
+                <a href="{{ path('memberships_list', {'id': student.id}) }}" class="list-group-item">Открыть список сообществ</a>
+            </div>
+        </div>
+
+        <div class="col-sm-9" id="right-side">
+            <div id="block-info" class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Информация о пользователе</h3>
+                </div>
+                <div class="panel-body">
+                    {% if student.degree is not null %}
+                    <div class="row">
+                        <div class="col-sm-3">Степень образования</div>
+                        <div class="col-sm-9">{{ student.degree }}</div>
+                    </div>
+                    {% endif %}
+                    {% if student.dob is not null %}
+                    <div class="row">
+                        <div class="col-sm-3">Дата рождения</div>
+                        <div class="col-sm-9">{{ student.dob|date('d.m.Y') }}</div>
+                    </div>
+                    {% endif %}
+                    {% if student.phone is not null %}
+                    <div class="row">
+                        <div class="col-sm-3">Телефон</div>
+                        <div class="col-sm-9">{{ student.phone }}</div>
+                    </div>
+                    {% endif %}
+                    <div class="row">
+                        <div class="col-sm-3">Электронная почта</div>
+                        <div class="col-sm-9"><a href="mailto:{{ student.email }}">{{ student.email }}</a></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">Дата регистрации</div>
+                        <div class="col-sm-9">{{ student.signupDate|date('d.m.Y') }}</div>
+                    </div>
+                </div>
+            </div>
+
+            {% if student.group is not null %}
+            <div id="block-student" class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Место учебы</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-3">Факультет</div>
+                        <div class="col-sm-9">{{ student.group.department.faculty.name }} ({{ student.group.department.faculty.abbr }})</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">Кафедра</div>
+                        <div class="col-sm-9">{{ student.group.department.name }} ({{ student.group.department.faculty.abbr ~ student.group.department.number}})</div>
+                    </div>
+                    {% if student.group.course is not null %}
+                    <div class="row">
+                        <div class="col-sm-3">Направление</div>
+                        <div class="col-sm-9">{{ student.group.course.name }} ({{ student.group.course.number }})</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">Уровень образования</div>
+                        <div class="col-sm-9">{{ student.group.course.degree }}</div>
+                    </div>
+                    {% endif %}
+                    <div class="row">
+                        <div class="col-sm-3">Группа</div>
+                        <div class="col-sm-9">{{ student.group.department.faculty.abbr ~ student.group.department.number }}-{{ student.group.semester ~ student.group.number }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if student.jobs|length > 0 %}
+            <div id="block-jobs" class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Места работы</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="panel-group">
+                        {% for job in student.jobs %}
+                        <div class="block-job panel panel-default">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-3">Организация</div>
+                                    <div class="col-sm-9">{{ job.name }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-3">Должность</div>
+                                    <div class="col-sm-9">{{ job.occupation }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-3">Дата начала</div>
+                                    <div class="col-sm-9">{{ job.startDate|date('d.m.Y') }}</div>
+                                </div>
+                                {% if job.endDate is not null %}
+                                <div class="row">
+                                    <div class="col-sm-3">Дата окончания</div>
+                                    <div class="col-sm-9">{{ job.endDate|date('d.m.Y') }}</div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_USER') and app.user.student.id == student.id %}
+                            <div class="panel-footer">
+                                <a href="{{ path('job_edit', { 'id': job.id}) }}">Редактировать</a>
+                                <a href="{{ path('job_delete', {'id': job.id}) }}">Удалить</a>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

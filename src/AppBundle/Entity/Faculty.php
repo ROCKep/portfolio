@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -31,14 +32,14 @@ class Faculty
 
 
     /**
-     * @ORM\OneToMany(targetEntity="Department", mappedBy="faculty")
+     * @ORM\OneToMany(targetEntity="Department", mappedBy="faculty", cascade={"remove"})
      */
     private $departments;
 
 
     public function __construct()
     {
-        $this->departments = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->departments = new ArrayCollection();
     }
 
     public function getId()
@@ -49,8 +50,6 @@ class Faculty
     public function setName($name)
     {
         $this->name = $name;
-
-        return $this;
     }
 
     public function getName()
@@ -61,8 +60,6 @@ class Faculty
     public function setAbbr($abbr)
     {
         $this->abbr = $abbr;
-
-        return $this;
     }
 
     public function getAbbr()
@@ -71,14 +68,12 @@ class Faculty
     }
 
 
-    public function addDepartment(\AppBundle\Entity\Department $department)
+    public function addDepartment(Department $department)
     {
         $this->departments[] = $department;
-
-        return $this;
     }
 
-    public function removeDepartment(\AppBundle\Entity\Department $department)
+    public function removeDepartment(Department $department)
     {
         $this->departments->removeElement($department);
     }

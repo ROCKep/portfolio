@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Сообщества пользователя{% endblock %}
+{% block header %}Сообщества пользователя{% endblock %}
+
+{% block body %}
+    {% if is_granted('ROLE_USER') and app.user.student.id == student.id %}
+    <p><a href="{{ path('community_new') }}">Создать новое сообщество</a></p>
+    {% endif %}
+    {% if student.memberships|length > 0 %}
+    <ul>
+        {% for membership in student.memberships %}
+        <li><a href="{{ path('community_show', {'id': membership.community.id}) }}">{{ membership.community.name }}</a></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>Пользователь еще не вступил ни в одно сообщество.</p>
+    {% endif %}
+{% endblock %}

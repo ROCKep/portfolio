@@ -10,32 +10,33 @@
 {% block header %}Регистрация{% endblock %}
 {% block body %}
     {{ form_start(form) }}
-    {{ form_row(form.lastName) }}
-    {{ form_row(form.firstName) }}
-    {{ form_row(form.middleName) }}
-    {{ form_row(form.group) }}
-    {{ form_row(form.email) }}
-    {{ form_row(form.username) }}
-    {{ form_row(form.plainPassword.first) }}
-    {{ form_row(form.plainPassword.second) }}
-    {{ form_row(form.submit) }}
+        {{ form_row(form.lastName) }}
+        {{ form_row(form.firstName) }}
+        {{ form_row(form.middleName) }}
+        {{ form_row(form.number) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.group) }}
+        {{ form_row(form.account.username) }}
+        {{ form_row(form.account.plainPassword.first) }}
+        {{ form_row(form.account.plainPassword.second) }}
+        {{ form_row(form.submit) }}
     {{ form_end(form) }}
 {% endblock %}
 
-    {% block javascript %}
-        {{ parent() }}
-        <script src="{{ asset('assets/vendor/select2/dist/js/select2.min.js') }}"></script>
-        <script>
-            $(document).ready(function () {
-                $('#{{ form.group.vars.id }}').select2({
-                    placeholder: "Например, ИУ5-81",
-                    allowClear: true,
-                    language: {
-                        noResults: function () {
-                            return "Нет результатов";
-                        }
+{% block javascript %}
+    {{ parent() }}
+    <script src="{{ asset('assets/vendor/select2/dist/js/select2.min.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('#{{ form.group.vars.id }}').select2({
+                placeholder: "Например, ИУ5-81",
+                allowClear: true,
+                language: {
+                    noResults: function () {
+                        return "Нет результатов";
                     }
-                });
-            })
-        </script>
-    {% endblock %}
+                }
+            });
+        })
+    </script>
+{% endblock %}

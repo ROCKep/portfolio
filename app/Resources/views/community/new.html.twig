@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Новое сообщество{% endblock %}
+{% block header %}Новое сообщество{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.about) }}
+    {#{{ form_row(form.photo.original.file) }}#}
+    {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+{% endblock %}

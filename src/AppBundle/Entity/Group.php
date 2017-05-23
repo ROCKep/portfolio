@@ -24,7 +24,7 @@ class Group
     private $number;
 
     /**
-     * @ORM\Column(name="semester", type="integer", nullable=true)
+     * @ORM\Column(name="semester", type="integer")
      */
     private $semester;
 
@@ -40,26 +40,25 @@ class Group
 
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\User", mappedBy="group")
+     * @ORM\OneToMany(targetEntity="Student", mappedBy="group")
      */
-    private $users;
+    private $students;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Department", inversedBy="groups")
-     * @ORM\JoinColumn(name="department_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Department", inversedBy="groups")
      */
     private $department;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Course", inversedBy="groups")
-     * @ORM\JoinColumn(name="course_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Course")
+     * @ORM\JoinColumn(onDelete="SET NULL")
      */
     private $course;
 
 
     public function __construct()
     {
-        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->students = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     public function getId()
@@ -70,8 +69,6 @@ class Group
     public function setNumber($number)
     {
         $this->number = $number;
-
-        return $this;
     }
 
     public function getNumber()
@@ -92,8 +89,6 @@ class Group
     public function setStartYear($startYear)
     {
         $this->startYear = $startYear;
-
-        return $this;
     }
 
     public function getStartYear()
@@ -104,8 +99,6 @@ class Group
     public function setEndYear($endYear)
     {
         $this->endYear = $endYear;
-
-        return $this;
     }
 
     public function getEndYear()
@@ -114,11 +107,9 @@ class Group
     }
 
 
-    public function setDepartment(\AppBundle\Entity\Department $department = null)
+    public function setDepartment(Department $department = null)
     {
         $this->department = $department;
-
-        return $this;
     }
 
     public function getDepartment()
@@ -126,28 +117,24 @@ class Group
         return $this->department;
     }
 
-    public function addUser(\AppBundle\Entity\User $user)
+    public function addStudent(Student $student)
     {
-        $this->users[] = $user;
-
-        return $this;
+        $this->students[] = $student;
     }
 
-    public function removeUser(\AppBundle\Entity\User $user)
+    public function removeStudent(Student $student)
     {
-        $this->users->removeElement($user);
+        $this->students->removeElement($student);
     }
 
-    public function getUsers()
+    public function getStudents()
     {
-        return $this->users;
+        return $this->students;
     }
 
-    public function setCourse(\AppBundle\Entity\Course $course = null)
+    public function setCourse(Course $course = null)
     {
         $this->course = $course;
-
-        return $this;
     }
 
     public function getCourse()

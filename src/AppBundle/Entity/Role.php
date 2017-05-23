@@ -19,52 +19,22 @@ class Role implements RoleInterface
     private $id;
 
     /**
-     * @ORM\Column(name="role", type="string", unique=true)
+     * @ORM\Column(name="name", type="string", unique=true)
      */
-    private $role;
-
-    /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\User", mappedBy="role")
-     */
-    private $users;
-
-    public function __construct()
-    {
-        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+    private $name;
 
     public function getId()
     {
         return $this->id;
     }
 
-    public function setRole($role)
+    public function setRole($name)
     {
-        $this->role = $role;
-
-        return $this;
+        $this->name = $name;
     }
 
     public function getRole()
     {
-        return $this->role;
-    }
-
-
-    public function addUser(\AppBundle\Entity\User $user)
-    {
-        $this->users[] = $user;
-
-        return $this;
-    }
-
-    public function removeUser(\AppBundle\Entity\User $user)
-    {
-        $this->users->removeElement($user);
-    }
-
-    public function getUsers()
-    {
-        return $this->users;
+        return $this->name;
     }
 }

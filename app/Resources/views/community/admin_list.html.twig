@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Сообщества{% endblock %}
+{% block header %}Сообщества{% endblock %}
+
+{% block body %}
+    <p><a href="{{ path('admin_panel') }}">Вернуться к панели администратора</a></p>
+    {% if communities|length > 0 %}
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>Название</th>
+                <th>Создатель</th>
+                <th>Дата создания</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for community in communities %}
+                <tr>
+                    <td><a href="{{ path('community_show', {'id': community.id}) }}">{{ community.name }}</a></td>
+                    <td>
+                        {% if community.creator is not null %}
+                        <a href="{{ path('student_show', {'id': community.creator.id}) }}">
+                            {{ community.creator.lastName }} {{ community.creator.firstName }}
+                        </a>
+                        {% endif %}
+                    </td>
+                    <td>{{ community.creationDate|date('d.m.Y') }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Пусто</p>
+    {% endif %}
+{% endblock %}

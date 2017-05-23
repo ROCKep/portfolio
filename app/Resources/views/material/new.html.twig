@@ -6,7 +6,97 @@
         {{ form_row(form.name) }}
         {{ form_row(form.content) }}
         {{ form_row(form.link) }}
-        {{ form_row(form.file) }}
+        <h3>Фотографии</h3>
+        <ul class="photos" data-prototype="{{ form_widget(form.photoFiles.vars.prototype)|e('html_attr') }}">
+            {% for photo in form.photoFiles %}
+            <li>{{ form_row(photo.file) }}</li>
+            {% endfor %}
+        </ul>
+        <h3>Файлы</h3>
+        <ul class="files" data-prototype="{{ form_widget(form.files.vars.prototype)|e('html_attr') }}">
+            {% for file in form.files %}
+                <li>{{ form_row(file.file) }}</li>
+            {% endfor %}
+        </ul>
         {{ form_row(form.submit) }}
     {{ form_end(form) }}
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script>
+        var $filesHolder;
+        var $photosHolder;
+        // setup an "add a file" link
+        var $addFileLink = $('<a href="#" class="add_file_link">Добавить файл</a>');
+        var $addPhotoLink = $('<a href="#" class="add_file_link">Добавить фотографию</a>');
+        var $newFileLinkLi = $('<li></li>').append($addFileLink);
+        var $newPhotoLinkLi = $('<li></li>').append($addPhotoLink);
+
+        $(document).ready(function() {
+            // Get the ul that holds the collection of files
+            $filesHolder = $('ul.files');
+            $photosHolder = $('ul.photos');
+
+            // add the "add a file" anchor and li to the tags ul
+            $filesHolder.append($newFileLinkLi);
+            $photosHolder.append($newPhotoLinkLi);
+
+            // count the current form inputs we have (e.g. 2), use that as the new
+            // index when inserting a new item (e.g. 2)
+            $filesHolder.data('index', $filesHolder.find(':input').length);
+            $photosHolder.data('index', $photosHolder.find(':input').length);
+
+            $addFileLink.on('click', function(e) {
+                // prevent the link from creating a "#" on the URL
+                e.preventDefault();
+
+                // add a new file form
+                addFileForm($filesHolder, $newFileLinkLi);
+            });
+
+            $addPhotoLink.on('click', function(e) {
+                // prevent the link from creating a "#" on the URL
+                e.preventDefault();
+
+                // add a new photo form
+                addFileForm($photosHolder, $newPhotoLinkLi);
+            });
+        });
+
+        function addFileForm($collectionHolder, $newLinkLi) {
+            // Get the data-prototype explained earlier
+            var prototype = $collectionHolder.data('prototype');
+
+            // get the new index
+            var index = $collectionHolder.data('index');
+
+            // Replace '__name__' in the prototype's HTML to
+            // instead be a number based on how many items we have
+            var newForm = prototype.replace(/__name__/g, index);
+
+            // increase the index with one for the next item
+            $collectionHolder.data('index', index + 1);
+
+            // Display the form in the page in an li, before the "Add a file" link li
+            var $newFormLi = $('<li></li>').append(newForm);
+            $newLinkLi.before($newFormLi);
+
+            // add a delete link to the new form
+            addFileFormDeleteLink($newFormLi);
+        }
+
+        function addFileFormDeleteLink($fileFormLi) {
+            var $removeFormA = $('<a href="#">Удалить файл</a>');
+            $fileFormLi.append($removeFormA);
+
+            $removeFormA.on('click', function(e) {
+                // prevent the link from creating a "#" on the URL
+                e.preventDefault();
+
+                // remove the li for the file form
+                $fileFormLi.remove();
+            });
+        }
+    </script>
 {% endblock %}

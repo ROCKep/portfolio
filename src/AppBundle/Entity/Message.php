@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Controller\StudentController;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -30,17 +31,17 @@ class Message
     /**
      * @ORM\Column(name="has_been_read", type="boolean")
      */
-    private $hasBeenRead;
+    private $hasBeenRead = false;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="messagesSent")
-     * @ORM\JoinColumn(name="sender_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Student", inversedBy="messagesSent")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $sender;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="messagesReceived")
-     * @ORM\JoinColumn(name="receiver_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Student", inversedBy="messagesReceived")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $receiver;
 
@@ -53,8 +54,6 @@ class Message
     public function setContent($content)
     {
         $this->content = $content;
-
-        return $this;
     }
 
     public function getContent()
@@ -62,11 +61,9 @@ class Message
         return $this->content;
     }
 
-    public function setTime($time)
+    public function setTime()
     {
-        $this->time = $time;
-
-        return $this;
+        $this->time = new \DateTime();
     }
 
     public function getTime()
@@ -74,11 +71,9 @@ class Message
         return $this->time;
     }
 
-    public function setSender(\AppBundle\Entity\User $sender = null)
+    public function setSender(Student $sender = null)
     {
         $this->sender = $sender;
-
-        return $this;
     }
 
     public function getSender()
@@ -86,11 +81,9 @@ class Message
         return $this->sender;
     }
 
-    public function setReceiver(\AppBundle\Entity\User $receiver = null)
+    public function setReceiver(Student $receiver = null)
     {
         $this->receiver = $receiver;
-
-        return $this;
     }
 
     public function getReceiver()
@@ -98,11 +91,9 @@ class Message
         return $this->receiver;
     }
 
-    public function setHasBeenRead($hasBeenRead)
+    public function setHasBeenRead()
     {
-        $this->hasBeenRead = $hasBeenRead;
-
-        return $this;
+        $this->hasBeenRead = true;
     }
 
     public function getHasBeenRead()

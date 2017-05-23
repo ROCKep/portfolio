@@ -1,0 +1,17 @@
+{% extends 'community/edit/layout.html.twig' %}
+
+{% block edit_body %}
+    {% if community.photo is not null %}
+    <p>Текущая фотография:</p>
+    <p>
+        <a href="{{ asset('uploads/files/' ~ community.photo.original.path) }}">
+            <img src="{{ asset('uploads/files/' ~ community.photo.thumbnail.path) }}"
+                 alt="{{ community.photo.thumbnail.name }}">
+        </a>
+    </p>
+    {% endif %}
+    {{ form_start(form) }}
+        {{ form_row(form.photoFile.file) }}
+        {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+{% endblock %}

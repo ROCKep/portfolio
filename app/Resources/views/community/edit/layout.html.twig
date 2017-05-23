@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+{% block title %}Редактирование сообщества{% endblock %}
+{% block header %}Редактирование сообщества{% endblock %}
+{% block body %}
+    <ul class="nav nav-tabs">
+        {% set uri = app.request.getRequestUri() %}
+        <li {{ uri ==  path('community_edit', {'id': community.id}) ? 'class="active"' }}>
+            <a href="{{ path('community_edit', {'id': community.id}) }}">Основное</a>
+        </li>
+        <li {{ uri ==  path('community_edit_avatar', {'id': community.id}) ? 'class="active"' }}>
+            <a href="{{ path('community_edit_avatar', {'id': community.id}) }}">Фотография</a>
+        </li>
+    </ul>
+    <br>
+    {% block edit_body %}{% endblock %}
+{% endblock %}

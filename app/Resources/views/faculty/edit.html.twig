@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Редактирование факультета{% endblock %}
+{% block header %}Редактирование факультета{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+        {{ form_row(form.name) }}
+        {{ form_row(form.abbr) }}
+        {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+{% endblock %}

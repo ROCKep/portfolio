@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Результаты поиска{% endblock %}
+{% block header %}Результаты поиска{% endblock %}
+
+{% block body %}
+    {% if communities|length > 0 %}
+        <ul>
+            {% for community in communities %}
+                <li><a href="{{ path('community_show', {'id': community.id}) }}">{{ community.name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Нет результатов</p>
+    {% endif %}
+    <p><a href="{{ path('search') }}">Вернуться к поиску</a></p>
+{% endblock %}

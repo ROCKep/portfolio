@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -23,7 +24,7 @@ class Community
     private $name;
 
     /**
-     * @ORM\Column(name="about", type="string")
+     * @ORM\Column(name="about", type="text")
      */
     private $about;
 
@@ -34,20 +35,31 @@ class Community
 
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Membership", mappedBy="community")
+     * @ORM\OneToOne(targetEntity="Photo", orphanRemoval=true, cascade={"persist"})
+     * @ORM\JoinColumn(onDelete="SET NULL")
+     */
+    private $photo;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Membership", mappedBy="community")
      */
     private $memberships;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Category", mappedBy="community")
+     * @ORM\OneToMany(targetEntity="Category", mappedBy="community", orphanRemoval=true)
      */
     private $categories;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Student", inversedBy="createdCommunities")
+     * @ORM\JoinColumn(onDelete="SET NULL")
+     */
+    private $creator;
 
     public function __construct()
     {
-        $this->memberships = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->categories = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->memberships = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
     public function getId()
@@ -58,8 +70,6 @@ class Community
     public function setName($name)
     {
         $this->name = $name;
-
-        return $this;
     }
 
     public function getName()
@@ -70,8 +80,6 @@ class Community
     public function setAbout($about)
     {
         $this->about = $about;
-
-        return $this;
     }
 
     public function getAbout()
@@ -79,11 +87,9 @@ class Community
         return $this->about;
     }
 
-    public function setCreationDate($creationDate)
+    public function setCreationDate()
     {
-        $this->creationDate = $creationDate;
-
-        return $this;
+        $this->creationDate = new \DateTime();
     }
 
     public function getCreationDate()
@@ -92,14 +98,22 @@ class Community
     }
 
 
-    public function addMembership(\AppBundle\Entity\Membership $membership)
+    public function getPhoto()
     {
-        $this->memberships[] = $membership;
-
-        return $this;
+        return $this->photo;
     }
 
-    public function removeMembership(\AppBundle\Entity\Membership $membership)
+    public function setPhoto(Photo $photo = null)
+    {
+        $this->photo = $photo;
+    }
+
+    public function addMembership(Membership $membership)
+    {
+        $this->memberships[] = $membership;
+    }
+
+    public function removeMembership(Membership $membership)
     {
         $this->memberships->removeElement($membership);
     }
@@ -109,14 +123,22 @@ class Community
         return $this->memberships;
     }
 
-    public function addCategory(\AppBundle\Entity\Category $category)
+    public function getCreator()
     {
-        $this->categories[] = $category;
-
-        return $this;
+        return $this->creator;
     }
 
-    public function removeCategory(\AppBundle\Entity\Category $category)
+    public function setCreator(Student $creator = null)
+    {
+        $this->creator = $creator;
+    }
+
+    public function addCategory(Category $category)
+    {
+        $this->categories[] = $category;
+    }
+
+    public function removeCategory(Category $category)
     {
         $this->categories->removeElement($category);
     }

@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ community.name }}{% endblock %}
+{% block stylesheet %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/community_page.css') }}">
+{% endblock %}
+
+{% block header %}{{ community.name }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-9" id="left-side">
+            <div class="panel panel-default" id="block-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Информация о сообществе</h3>
+                </div>
+                <div class="panel-body">
+                    <p><strong>Описание:</strong></p>
+                    <p>{{ community.about }}</p>
+                    <div class="row">
+                        <div class="col-sm-3"><strong>Дата создания:</strong></div>
+                        <div class="col-sm-9">{{ community.creationDate|date('d.m.Y') }}</div>
+                    </div>
+                    {% if community.creator is not null %}
+                    <div class="row">
+                        <div class="col-sm-3"><strong>Создатель:</strong></div>
+                        <div class="col-sm-9">
+                            <a href="{{ path('student_show', {'id': community.creator.id}) }}">
+                                {{ community.creator.lastName }} {{ community.creator.firstName }}
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3" id="right-side">
+            <div class="panel panel-default" id="block-photo">
+                <div class="panel-body">
+                    {% if community.photo is null %}
+                    <img src="{{ asset('img/photo.png') }}">
+                    {% else %}
+                    <a href="{{ asset('uploads/files/' ~ community.photo.original.path) }}">
+                        <img src="{{ asset('uploads/files/' ~ community.photo.thumbnail.path) }}"
+                             alt="{{ community.photo.thumbnail.name }}">
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+            <div class="list-group">
+                {% if is_granted('ROLE_ADMIN') or app.user.student.id == community.creator.id %}
+                <a href="{{ path('community_edit', {'id': community.id}) }}" class="list-group-item">Редактировать сообщество</a>
+                <a href="{{ path('community_delete', {'id': community.id}) }}" class="list-group-item">Удалить сообщество</a>
+                {% elseif app.user.student in members %}
+                <a href="{{ path('community_exit', {'id': community.id}) }}" class="list-group-item">Выйти из сообщества</a>
+                {% else %}
+                <a href="{{ path('community_enter', {'id': community.id}) }}" class="list-group-item">Вступить в сообщество</a>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="list-group">
+                <a href="{{ path('cat_show', {'id': root_category.id}) }}" class="list-group-item">Просмотреть материалы</a>
+                <a href="{{ path('community_members', {'id': community.id}) }}" class="list-group-item">Открыть список участников</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+

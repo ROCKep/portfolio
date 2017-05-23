@@ -7,22 +7,31 @@ use Doctrine\ORM\Query\ResultSetMapping;
 
 class CategoryRepository extends EntityRepository
 {
-    public function findRootByUserId($id)
+    public function getRootByStudentId($id)
     {
-        $query = $this->getEntityManager()
-            ->createQuery(
-                'SELECT c, u FROM AppBundle:Category c
-                  JOIN c.user u
-                  WHERE u.id = :id AND c.parent IS NULL'
-            )->setParameter('id', $id);
-        try
-        {
-            return $query->getSingleResult();
-        }
-        catch (\Doctrine\ORM\NoResultException $e)
-        {
-            return null;
-        }
+        $dql = 'SELECT c FROM AppBundle:Category c
+                JOIN c.student s
+                WHERE s.id = :id AND c.parent IS NULL';
+        $query = $this->getEntityManager()->createQuery($dql)->setParameter('id', $id);
+        return $query->getOneOrNullResult();
+    }
+
+    public function getRootByCommunityId($id)
+    {
+        $dql = 'SELECT c FROM AppBundle:Category c
+                JOIN c.community com
+                WHERE com.id = :id AND c.parent IS NULL';
+        $query = $this->getEntityManager()->createQuery($dql)->setParameter('id', $id);
+        return $query->getOneOrNullResult();
+    }
+
+    public function getCategoryWithParent($id)
+    {
+        $dql = "SELECT c, p 
+                FROM AppBundle:Category c JOIN c.parent p
+                WHERE c.id = :id";
+        $query = $this->getEntityManager()->createQuery($dql)->setParameter('id', $id);
+        return $query->getOneOrNullResult();
     }
 
     public function getBreadcrumbs($id)

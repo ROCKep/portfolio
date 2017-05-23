@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Добавление группы{% endblock %}
+
+{% block stylesheet %}
+    {{ parent() }}
+    <link href="{{ asset('assets/vendor/select2/dist/css/select2.min.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block header %}Добавление группы{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+        {{ form_row(form.number) }}
+        {{ form_row(form.semester) }}
+        {{ form_row(form.course) }}
+        {{ form_row(form.startYear) }}
+        {{ form_row(form.endYear) }}
+        {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script src="{{ asset('assets/vendor/select2/dist/js/select2.min.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('#{{ form.course.vars.id }}').select2({
+                placeholder: "",
+                allowClear: true,
+                language: {
+                    noResults: function () {
+                        return "Нет результатов";
+                    }
+                }
+            });
+        })
+    </script>
+{% endblock %}

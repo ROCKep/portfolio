@@ -13,109 +13,126 @@ class CategoryController extends Controller
     /**
      * @Route(path="/cat/{id}", name="cat_show")
      */
-    public function showAction($id = null)
+    public function showAction($id)
     {
         $repository = $this->getDoctrine()->getRepository('AppBundle:Category');
-        if ($id === null)
-        {
-            if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED'))
-            {
-                $this->denyAccessUnlessGranted('ROLE_USER');
-            }
-            $user = $this->getUser();
-            $root = $repository->findRootByUserId($user->getId());
-            return $this->redirectToRoute('cat_show', array('id' => $root->getId()));
-        }
+
         $category = $repository->find($id);
-        if (!$category)
-        {
-            return $this->createNotFoundException('Категории с таким id не существует');
+        if (!$category) {
+            throw $this->createNotFoundException('Категории с таким id не существует');
         }
 
         $breadcrumbs = $repository->getBreadcrumbs($id);
-        return $this->render('category/show.html.twig', array('category' => $category, 'breadcrumbs' => $breadcrumbs));
+
+        $members = array();
+        if ($community = $category->getCommunity()) {
+            $members = $this->getDoctrine()->getRepository('AppBundle:Student')
+                ->getMembersOfCommunity($community->getId());
+        }
+
+        return $this->render('category/show.html.twig', array('category' => $category,
+            'breadcrumbs' => $breadcrumbs, 'members' => $members));
     }
 
+
     /**
-     * @Route(path="/cat/new/{id}", name="cat_new")
+     * @Route(path="/cat/{id}/new", name="cat_new")
      */
     public function newAction(Request $request, $id)
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED'))
-        {
-            $this->denyAccessUnlessGranted('ROLE_USER');
-        }
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $student = $this->getUser()->getStudent();
 
         $parent = $this->getDoctrine()->getRepository('AppBundle:Category')->find($id);
-        if(!$parent)
-        {
-            return $this->createNotFoundException('Категории с таким id не существует');
-        }
-        $category = new Category();
-        //$category->setUser($this->getUser());
-        $category->setParent($parent);
-        $form = $this->createForm(CategoryType::class, $category);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid())
-        {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($category);
-            $em->flush();
-            $this->addFlash('success', 'Категория добавлена успешно');
-            return $this->redirectToRoute('cat_show', array('id' => $parent->getId()));
+        if(!$parent) {
+            throw $this->createNotFoundException('Категории с таким id не существует');
         }
 
-        return $this->render('category/new.html.twig', array(
-            'form' => $form->createView(),
-        ));
+        if ($student === $parent->getStudent() || $student === $parent->getCommunity()->getCreator()) {
+
+            $category = new Category();
+            $category->setParent($parent);
+            if ($student = $parent->getStudent()) {
+                $category->setStudent($student);
+            }
+            elseif ($community = $parent->getCommunity()) {
+                $category->setCommunity($community);
+            }
+
+            $form = $this->createForm(CategoryType::class, $category);
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid())
+            {
+                $category->setCreatedDate();
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($category);
+                $em->flush();
+                $this->addFlash('success', 'Категория добавлена успешно');
+                return $this->redirectToRoute('cat_show', array('id' => $parent->getId()));
+            }
+
+            return $this->render('category/new.html.twig', array('form' => $form->createView()));
+        }
+        else {
+            throw $this->createAccessDeniedException();
+        }
     }
 
     /**
-     * @Route(path="/cat/edit/{id}", name="cat_edit")
+     * @Route(path="/cat/{id}/edit", name="cat_edit")
      */
     public function editAction(Request $request, $id)
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED'))
-        {
-            $this->denyAccessUnlessGranted('ROLE_USER');
+        if(!$this->isGranted('ROLE_USER') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException();
         }
 
-        $category = $this->getDoctrine()->getRepository('AppBundle:Category')->find($id);
-        if(!$category)
-        {
-            return $this->createNotFoundException('Категории с таким id не существует');
+        $category = $this->getDoctrine()
+            ->getRepository('AppBundle:Category')
+            ->getCategoryWithParent($id);
+        if(!$category) {
+            throw $this->createNotFoundException('Категории с таким id не существует');
         }
+
+        if ($this->isGranted('ROLE_USER') && $this->getUser()->getStudent() !== $category->getStudent() &&
+            $this->getUser()->getStudent() !== $category->getCommunity()->getCreator()) {
+            throw $this->createAccessDeniedException();
+        }
+
         $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid())
         {
-            $category = $form->getData();
             $em = $this->getDoctrine()->getManager();
-            $em->persist($category);
             $em->flush();
             $this->addFlash('success', 'Категория отредактирована успешно');
             return $this->redirectToRoute('cat_show', array('id' => $category->getParent()->getId()));
         }
-        return $this->render('category/edit.html.twig', array(
-            'form' => $form->createView(),
-        ));
+        return $this->render('category/edit.html.twig', array('form' => $form->createView()));
     }
 
     /**
-     * @Route(path="/cat/delete/{id}", name="cat_delete")
+     * @Route(path="/cat/{id}/delete", name="cat_delete")
      */
     public function deleteAction($id)
     {
-        $category = $this->getDoctrine()->getRepository('AppBundle:Category')->find($id);
-        if(!$category)
-        {
-            return $this->createNotFoundException('Категории с таким id не существует');
+        if(!$this->isGranted('ROLE_USER') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException();
         }
-        if($category->getParent() == null)
-        {
-            $this->addFlash('error', 'Невозможно удалить корень');
-            return $this->redirectToRoute('cat_show', array('id' => $category->getId()));
+
+        $category = $this->getDoctrine()
+            ->getRepository('AppBundle:Category')
+            ->getCategoryWithParent($id);
+        if(!$category) {
+            throw $this->createNotFoundException('Категории с таким id не существует');
         }
+
+        if ($this->isGranted('ROLE_USER') && $this->getUser()->getStudent() !== $category->getStudent() &&
+            $this->getUser()->getStudent() !== $category->getCommunity()->getCreator()) {
+            throw $this->createAccessDeniedException();
+        }
+
         $em = $this->getDoctrine()->getManager();
         $em->remove($category);
         $em->flush();

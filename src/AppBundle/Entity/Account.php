@@ -10,7 +10,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Table(name="accounts")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\AccountRepository")
- * @UniqueEntity(fields="email", message="Электронная почта уже занята")
  * @UniqueEntity(fields="username", message="Логин уже занят")
  */
 class Account implements UserInterface, \Serializable
@@ -23,38 +22,17 @@ class Account implements UserInterface, \Serializable
     private $id;
 
     /**
-     * @ORM\Column(name="first_name", type="string")
-     * @Assert\NotBlank()
-     */
-    private $firstName;
-
-    /**
-     * @ORM\Column(name="middle_name", type="string", nullable=true)
-     */
-    private $middleName;
-
-    /**
-     * @ORM\Column(name="last_name", type="string")
-     * @Assert\NotBlank()
-     */
-    private $lastName;
-
-    /**
-     * @ORM\Column(name="email", type="string", unique=true)
-     * @Assert\Email()
-     * @Assert\NotBlank()
-     */
-    private $email;
-
-    /**
      * @ORM\Column(name="username", type="string", unique=true)
-     * @Assert\NotBlank(groups={"registration"})
+     * @Assert\NotBlank()
+     * @Assert\Length(min=4, max=10, minMessage="Логин должен быть длиной от 4 до 10 символов",
+     *     maxMessage="Логин должен быть длиной от 4 до 10 символов")
      */
     private $username;
 
     /**
      * @Assert\NotBlank(groups={"registration"})
-     * @Assert\Length(max="4096", groups={"registration"})
+     * @Assert\Length(min=6, minMessage="Пароль не может быть короче 6 символов",
+     *     max=4096, maxMessage="Пароль не может быть длиннее 4096 символов", groups={"registration"})
      */
     private $plainPassword;
 
@@ -64,69 +42,23 @@ class Account implements UserInterface, \Serializable
     private $password;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Role", inversedBy="users")
-     * @ORM\JoinColumn(name="role_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Role")
      */
     private $role;
+
+    /**
+     * @ORM\OneToOne(targetEntity="Student", mappedBy="account")
+     */
+    private $student;
 
     public function getId()
     {
         return $this->id;
     }
 
-    public function setFirstName($firstName)
-    {
-        $this->firstName = $firstName;
-
-        return $this;
-    }
-
-    public function getFirstName()
-    {
-        return $this->firstName;
-    }
-
-    public function setMiddleName($middleName)
-    {
-        $this->middleName = $middleName;
-
-        return $this;
-    }
-
-    public function getMiddleName()
-    {
-        return $this->middleName;
-    }
-
-    public function setLastName($lastName)
-    {
-        $this->lastName = $lastName;
-
-        return $this;
-    }
-
-    public function getLastName()
-    {
-        return $this->lastName;
-    }
-
-    public function setEmail($email)
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
     public function setUsername($username)
     {
         $this->username = $username;
-
-        return $this;
     }
 
     public function getUsername()
@@ -137,8 +69,6 @@ class Account implements UserInterface, \Serializable
     public function setPassword($password)
     {
         $this->password = $password;
-
-        return $this;
     }
 
     public function getPassword()
@@ -146,11 +76,9 @@ class Account implements UserInterface, \Serializable
         return $this->password;
     }
 
-    public function setRole(\AppBundle\Entity\Role $role = null)
+    public function setRole(Role $role = null)
     {
         $this->role = $role;
-
-        return $this;
     }
 
     public function getRole()
@@ -198,5 +126,15 @@ class Account implements UserInterface, \Serializable
             $this->username,
             $this->password
             ) = unserialize($serialized);
+    }
+
+    public function setStudent(Student $student = null)
+    {
+        $this->student = $student;
+    }
+
+    public function getStudent()
+    {
+        return $this->student;
     }
 }

@@ -1,0 +1,9 @@
+{% extends 'community/edit/layout.html.twig' %}
+
+{% block edit_body %}
+    {{ form_start(form) }}
+        {{ form_row(form.name) }}
+        {{ form_row(form.about) }}
+        {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+{% endblock %}

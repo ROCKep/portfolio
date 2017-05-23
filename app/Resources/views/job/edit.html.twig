@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Редактирование места работы{% endblock %}
+
+{% block header %}Редактирование места работы{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.occupation) }}
+    {{ form_row(form.startDate) }}
+    {{ form_row(form.endDate) }}
+    {{ form_end(form) }}
+{% endblock %}

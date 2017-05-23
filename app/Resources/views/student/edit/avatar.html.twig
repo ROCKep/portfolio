@@ -1,0 +1,17 @@
+{% extends 'student/edit/layout.html.twig' %}
+
+{% block edit_body %}
+    {% if student.avatar is not null %}
+    <p>Текущая фотография:</p>
+    <p>
+        <a href="{{ asset('uploads/files/' ~ student.avatar.original.path) }}">
+            <img src="{{ asset('uploads/files/' ~ student.avatar.thumbnail.path) }}"
+                 alt="{{ student.avatar.thumbnail.name }}">
+        </a>
+    </p>
+    {% endif %}
+    {{ form_start(form) }}
+        {{ form_row(form.avatarFile.file) }}
+        {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+{% endblock %}

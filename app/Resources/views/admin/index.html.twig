@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Панель администратора{% endblock %}
+{% block header %}Панель администратора{% endblock %}
+
+{% block body %}
+    <ul>
+        <li><a href="{{ path('faculties_list') }}">Открыть список факультетов</a></li>
+        <li><a href="{{ path('courses_list') }}">Открыть список направлений</a></li>
+        <li><a href="{{ path('admin_communities_list') }}">Открыть список сообществ</a></li>
+    </ul>
+{% endblock %}

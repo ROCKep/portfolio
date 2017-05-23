@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -29,56 +30,53 @@ class Material
     private $content;
 
     /**
-     * @ORM\Column(name="other_authors", type="string", nullable=true)
-     */
-    private $otherAuthors;
-
-    /**
      * @ORM\Column(name="link", type="string", nullable=true)
      */
     private $link;
 
     /**
-     * @ORM\Column(name="file", type="string", nullable=true)
-     * @Assert\File(maxSize="50Mi")
-     */
-    private $file;
-
-    /**
-     * @ORM\Column(name="date", type="datetime")
+     * @ORM\Column(name="date", type="date")
      */
     private $date;
 
 
     /**
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\User", inversedBy="materials")
-     * @ORM\JoinColumn(name="user_material")
+     * @ORM\OneToMany(targetEntity="File", mappedBy="material", cascade={"persist", "remove"})
      */
-    private $users;
+    private $files;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Comment", mappedBy="material")
+     * @ORM\OneToMany(targetEntity="Photo", mappedBy="material", cascade={"persist", "remove"})
+     */
+    private $photos;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Student")
+     * @ORM\JoinColumn(onDelete="SET NULL")
+     */
+    private $author;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Comment", mappedBy="material")
      */
     private $comments;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Category", inversedBy="materials")
-     * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Category", inversedBy="materials")
      */
     private $category;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Restriction", inversedBy="materials")
-     * @ORM\JoinColumn(name="restriction_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Restriction")
      */
     private $restriction;
 
 
     public function __construct()
     {
-        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->comments = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->date = new \DateTime();
+        $this->comments = new ArrayCollection();
+        $this->photos = new ArrayCollection();
+        $this->files = new ArrayCollection();
     }
 
     public function getId()
@@ -89,8 +87,6 @@ class Material
     public function setName($name)
     {
         $this->name = $name;
-
-        return $this;
     }
 
     public function getName()
@@ -101,8 +97,6 @@ class Material
     public function setContent($content)
     {
         $this->content = $content;
-
-        return $this;
     }
 
     public function getContent()
@@ -110,23 +104,9 @@ class Material
         return $this->content;
     }
 
-    public function setOtherAuthors($otherAuthors)
-    {
-        $this->otherAuthors = $otherAuthors;
-
-        return $this;
-    }
-
-    public function getOtherAuthors()
-    {
-        return $this->otherAuthors;
-    }
-
     public function setLink($link)
     {
         $this->link = $link;
-
-        return $this;
     }
 
     public function getLink()
@@ -134,22 +114,9 @@ class Material
         return $this->link;
     }
 
-    public function setFile($file)
+    public function setDate()
     {
-        $this->file = $file;
-        return $this;
-    }
-
-    public function getFile()
-    {
-        return $this->file;
-    }
-
-    public function setDate($date)
-    {
-        $this->date = $date;
-
-        return $this;
+        $this->date = new \DateTime();
     }
 
     public function getDate()
@@ -157,32 +124,13 @@ class Material
         return $this->date;
     }
 
-
-    public function addUser(\AppBundle\Entity\User $user)
-    {
-        $this->users[] = $user;
-
-        return $this;
-    }
-
-    public function removeUser(\AppBundle\Entity\User $user)
-    {
-        $this->users->removeElement($user);
-    }
-
-    public function getUsers()
-    {
-        return $this->users;
-    }
-
-    public function addComment(\AppBundle\Entity\Comment $comment)
+    public function addComment(Comment $comment)
     {
         $this->comments[] = $comment;
-
-        return $this;
+        $comment->setMaterial($this);
     }
 
-    public function removeComment(\AppBundle\Entity\Comment $comment)
+    public function removeComment(Comment $comment)
     {
         $this->comments->removeElement($comment);
     }
@@ -192,11 +140,9 @@ class Material
         return $this->comments;
     }
 
-    public function setCategory(\AppBundle\Entity\Category $category = null)
+    public function setCategory(Category $category = null)
     {
         $this->category = $category;
-
-        return $this;
     }
 
     public function getCategory()
@@ -204,15 +150,57 @@ class Material
         return $this->category;
     }
 
-    public function setRestriction(\AppBundle\Entity\Restriction $restriction = null)
+    public function setRestriction(Restriction $restriction = null)
     {
         $this->restriction = $restriction;
-
-        return $this;
     }
 
     public function getRestriction()
     {
         return $this->restriction;
+    }
+
+    public function addFile(File $file)
+    {
+        $this->files[] = $file;
+        $file->setMaterial($this);
+    }
+
+    public function removeFile(File $file)
+    {
+        $this->files->removeElement($file);
+        $file->setMaterial(null);
+    }
+
+    public function getFiles()
+    {
+        return $this->files;
+    }
+
+    public function addPhoto(Photo $photo)
+    {
+        $this->photos[] = $photo;
+        $photo->setMaterial($this);
+    }
+
+    public function removePhoto(Photo $photo)
+    {
+        $this->photos->removeElement($photo);
+        $photo->setMaterial(null);
+    }
+
+    public function getPhotos()
+    {
+        return $this->photos;
+    }
+
+    public function getAuthor()
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(Student $student = null)
+    {
+        $this->author = $student;
     }
 }

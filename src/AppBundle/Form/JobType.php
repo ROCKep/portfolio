@@ -15,7 +15,7 @@ class JobType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', TextType::class, array('label' => 'Название организации'))
+            ->add('name', TextType::class, array('label' => 'Организация'))
             ->add('occupation', TextType::class, array('label' => 'Должность'))
             ->add('startDate', DateType::class, array(
                 'label' => 'Дата начала работы',

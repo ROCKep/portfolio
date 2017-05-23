@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Список участников{% endblock %}
+{% block header %}Список участников{% endblock %}
+
+{% block body %}
+    <ul>
+        {% for membership in community.memberships %}
+        <li><a href="{{ path('student_show', {'id': membership.student.id}) }}">
+                {{ membership.student.lastName }} {{ membership.student.firstName }}
+            </a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+

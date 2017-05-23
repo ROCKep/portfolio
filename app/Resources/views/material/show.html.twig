@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Материал - {{ material.name }}{% endblock %}
+
+{% block stylesheet %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/material_page.css') }}"/>
+{% endblock %}
+
+{% block header %}Материал - {{ material.name }}{% endblock %}
+
+{% block body %}
+    <p><a href="{{ path('cat_show', {'id': material.category.id}) }}">Вернуться в категорию</a></p>
+    <div id="material">
+        <h4>Описание</h4>
+        <p>{{ material.content }}</p>
+        {% if material.photos|length > 0 %}
+        <h4>Фотографии</h4>
+        <ul id="photos" class="list-inline">
+            {% for photo in material.photos %}
+            <li class="photo">
+                <a href="{{ asset('uploads/files/' ~ photo.original.path) }}">
+                    <img src="{{ asset('uploads/files/' ~ photo.thumbnail.path) }}" alt="{{ photo.original.name }}">
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% if material.link is not null %}
+        <h4>Ссылка</h4>
+        <a href="{{ material.link }}">{{ material.link }}</a>
+        {% endif %}
+        {% if material.files|length > 0 %}
+        <h4>Файлы</h4>
+        <ul>
+            {% for file in material.files %}
+            <li>
+                <a href="{{ asset('uploads/files/' ~ file.path) }}">{{ file.name }}</a> ({{ file.size }} байт)
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div id="comments">
+        <h3>Комментарии</h3>
+        {% if material.comments|length == 0 %}
+        <p>Комментариев пока нет</p>
+        {% endif %}
+        {% for comment in material.comments %}
+        <div class="media">
+            <div class="media-left">
+                <img src="{% if comment.student.avatar is not null %}{{ asset('uploads/files/' ~ comment.student.avatar.thumbnail.path) }}
+                    {% else %}{{ asset('img/avatar.jpg') }}{% endif %}"
+                     style="width:60px" class="media-object">
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">
+                    {{ comment.student.lastName }} {{ comment.student.firstName }}
+                    <small>{{ comment.time|date('G:i d.m.y') }}</small>
+                </h4>
+                <p>{{ comment.content}}</p>
+            </div>
+        </div>
+        <hr>
+        {% endfor %}
+        {% if is_granted('ROLE_USER') %}
+        <h4>Написать комментарий</h4>
+        {{ form_start(form) }}
+            {{ form_row(form.content) }}
+            {{ form_row(form.submit) }}
+        {{ form_end(form) }}
+        {% endif %}
+    </div>
+{% endblock %}

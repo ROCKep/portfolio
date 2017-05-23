@@ -39,10 +39,10 @@ class Job
 
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="jobs")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Student", inversedBy="jobs")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
-    private $user;
+    private $student;
 
 
     public function getId()
@@ -53,8 +53,6 @@ class Job
     public function setName($name)
     {
         $this->name = $name;
-
-        return $this;
     }
 
     public function getName()
@@ -65,8 +63,6 @@ class Job
     public function setOccupation($occupation)
     {
         $this->occupation = $occupation;
-
-        return $this;
     }
 
     public function getOccupation()
@@ -77,8 +73,6 @@ class Job
     public function setStartDate($startDate)
     {
         $this->startDate = $startDate;
-
-        return $this;
     }
 
     public function getStartDate()
@@ -89,8 +83,6 @@ class Job
     public function setEndDate($endDate)
     {
         $this->endDate = $endDate;
-
-        return $this;
     }
 
     public function getEndDate()
@@ -98,15 +90,13 @@ class Job
         return $this->endDate;
     }
 
-    public function setUser(\AppBundle\Entity\User $user = null)
+    public function setStudent(Student $student = null)
     {
-        $this->user = $user;
-
-        return $this;
+        $this->student = $student;
     }
 
-    public function getUser()
+    public function getStudent()
     {
-        return $this->user;
+        return $this->student;
     }
 }

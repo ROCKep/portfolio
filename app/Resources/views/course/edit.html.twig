@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Редактирование направления{% endblock %}
+{% block header %}Редактирование направления{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+        {{ form_row(form.name) }}
+        {{ form_row(form.number) }}
+        {{ form_row(form.degree) }}
+        {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Направления{% endblock %}
+{% block header %}Направления{% endblock %}
+
+{% block body %}
+    <p><a href="{{ path('admin_panel') }}">Вернуться к панели администратора</a></p>
+    <p><a href="{{ path('course_new') }}">Добавить направление</a></p>
+    {% if courses|length > 0 %}
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Название</th>
+            <th>Номер</th>
+            <th>Уровень образования</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for course in courses %}
+        <tr>
+            <td>{{ course.name }}</td>
+            <td>{{ course.number }}</td>
+            <td>{{ course.degree }}</td>
+            <td>
+                <ul>
+                    <li><a href="{{ path('course_edit', {'id': course.id}) }}">Изменить</a></li>
+                    <li><a href="{{ path('course_delete', {'id': course.id}) }}">Удалить</a></li>
+                </ul>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Пусто</p>
+    {% endif %}
+{% endblock %}

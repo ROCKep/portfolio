@@ -3,9 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Category;
-//use AppBundle\Entity\Student;
-//use AppBundle\Entity\Teacher;
-use AppBundle\Entity\User;
+use AppBundle\Entity\Student;
 use AppBundle\Form\SignupType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -18,41 +16,40 @@ class SignupController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $user = new User();
-        $user->setRole($this->getDoctrine()
-            ->getRepository("AppBundle:Role")
-            ->findOneBy(array('role' => 'ROLE_USER')));
-        $form = $this->createForm(SignupType::class, $user);
+        $student = new Student();
 
+        $form = $this->createForm(SignupType::class, $student);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid())
         {
+            $student->setSignupDate();
+
+            $account = $student->getAccount();
             $password = $this->get('security.password_encoder')
-                ->encodePassword($user, $user->getPlainPassword());
-            $user->setPassword($password);
+                ->encodePassword($account, $account->getPlainPassword());
+            $account->setPassword($password);
+
+            $role = $this->getDoctrine()->getRepository('AppBundle:Role')
+                ->findOneBy(array('name' => 'ROLE_USER'));
+            $account->setRole($role);
+
             $root = new Category();
-            $root->setName('Корень');
-            $root->setUser($user);
+            $root->setName($student->getFirstName() . ' ' . $student->getLastName());
+            $root->setCreatedDate();
+            $root->setStudent($student);
 
             $em = $this->getDoctrine()->getManager();
 
-
-            $em->persist($user);
+            $em->persist($account);
+            $em->persist($student);
             $em->persist($root);
             $em->flush();
 
-            return $this->redirectToRoute('signup_success');
+            $this->addFlash('success', 'Регистрация прошла успешно');
+            return $this->redirectToRoute('homepage');
         }
 
         return $this->render('signup/index.html.twig', array('form' => $form->createView()));
-    }
-
-    /**
-     * @Route("/signup/success", name="signup_success")
-     */
-    public function successAction()
-    {
-        return $this->render('signup/success.html.twig');
     }
 }

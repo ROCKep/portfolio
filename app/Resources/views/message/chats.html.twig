@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Беседы{% endblock %}
+{% block header %}Беседы{% endblock %}
+
+{% block body %}
+    {% if chats|length > 0 %}
+    <ul>
+        {% for chat in chats %}
+        <li>
+            <a href="{{ path('message_chat', {'fellow_id': chat.id}) }}">
+                {{ chat.lastName }} {{ chat.firstName }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>Пусто</p>
+    {% endif %}
+{% endblock %}
+

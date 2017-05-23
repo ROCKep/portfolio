@@ -23,14 +23,14 @@ class Membership
     private $entryDate;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="memberships")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Student", inversedBy="memberships")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
-    private $user;
+    private $student;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Community", inversedBy="memberships")
-     * @ORM\JoinColumn(name="community_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Community", inversedBy="memberships")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $community;
 
@@ -40,11 +40,9 @@ class Membership
         return $this->id;
     }
 
-    public function setEntryDate($entryDate)
+    public function setEntryDate()
     {
-        $this->entryDate = $entryDate;
-
-        return $this;
+        $this->entryDate = new \DateTime();
     }
 
     public function getEntryDate()
@@ -52,23 +50,20 @@ class Membership
         return $this->entryDate;
     }
 
-    public function setUser(\AppBundle\Entity\User $user = null)
-    {
-        $this->user = $user;
 
-        return $this;
+    public function setStudent(Student $student = null)
+    {
+        $this->student = $student;
     }
 
-    public function getUser()
+    public function getStudent()
     {
-        return $this->user;
+        return $this->student;
     }
 
-    public function setCommunity(\AppBundle\Entity\Community $community = null)
+    public function setCommunity(Community $community = null)
     {
         $this->community = $community;
-
-        return $this;
     }
 
     public function getCommunity()

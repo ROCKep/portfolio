@@ -4,76 +4,77 @@
 {% block header %}Материалы{% endblock %}
 {% block body %}
     <ol class="breadcrumb">
-        {% for breadcrumb in breadcrumbs %}
-            {% if breadcrumb.id == category.id %}
-                <li class="active">{{ breadcrumb.name }}</li>
-            {% else %}
-                <li>
-                    <a href="{{ path('cat_show', {'id': breadcrumb.id}) }}">{{ breadcrumb.name }}</a>
-                </li>
-            {% endif %}
-        {% endfor %}
+    {% for breadcrumb in breadcrumbs %}
+        {% if breadcrumb.id == category.id %}
+        <li class="active">{{ breadcrumb.name }}</li>
+        {% else %}
+        <li>
+            <a href="{{ path('cat_show', {'id': breadcrumb.id}) }}">{{ breadcrumb.name }}</a>
+        </li>
+        {% endif %}
+    {% endfor %}
     </ol>
-    {% if category.children|length == 0 and category.materials|length == 0 %}
-        <p>Пусто</p>
-    {% else %}
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>Название</th>
-                    <th>Дата создания</th>
-                    <th>Права доступа</th>
-                    <th>Действия</th>
-                </tr>
-            </thead>
-            {% for c in category.children %}
-                <tr>
-                    <td>
-                        <span class="glyphicon glyphicon-folder-open"></span>
-                        <a href="{{ path('cat_show', {'id': c.id}) }}">{{ c.name }}</a>
-                    </td>
-                    <td>
-                        <span>{{ c.createdDate|date('d.m.Y') }}</span>
-                    </td>
-                    <td>
-                        <span>
-                            {% if c.restriction is not null %}
-                                {{ c.restriction.name }}
-                            {% else %}
-                                Видно всем
-                            {% endif %}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="actions">
-                            <a href="{{ path('cat_edit', {'id': c.id}) }}">Изменить</a>
-                            <a href="{{ path('cat_delete', {'id': c.id}) }}">Удалить</a>
-                        </span>
-                    </td>
-                </tr>
-            {% endfor %}
-            {% for m in category.materials %}
-                <tr>
-                    <td>
-                        <span class="glyphicon glyphicon-file"></span>
-                        <a href="#">{{ m.name }}</a>
-                    </td>
-                    <td>
-                        <span>{{ m.date|date('d.m.Y') }}</span>
-                    </td>
-                    <td>
-                        <span>{% if m.restriction is not null %}{{ m.restriction.name }}{% endif %}</span>
-                    </td>
-                    <td>
-                        <span class="actions">
-                            <a href="#">Изменить</a>
-                            <a href="#">Удалить</a>
-                        </span>
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
-    {% endif %}
-    <p><a href="{{ path('cat_new', {'id': category.id}) }}">Добавить подкатегорию</a></p>
+
+    {% if is_granted('ROLE_USER') and (app.user.student == category.student or app.user.student in members) %}
     <p><a href="{{ path('material_new', {'cat_id': category.id}) }}">Добавить материал</a></p>
+    {% if app.user.student == category.student or app.user.student == category.community.creator %}
+    <p><a href="{{ path('cat_new', {'id': category.id}) }}">Добавить подкатегорию</a></p>
+    {% endif %}
+    {% endif %}
+
+    {% if category.children|length == 0 and category.materials|length == 0 %}
+    <p>Пусто</p>
+    {% else %}
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Дата создания</th>
+                <th>Автор</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        {% for c in category.children %}
+        <tr>
+            <td>
+                <span class="glyphicon glyphicon-folder-open"></span>
+                <a href="{{ path('cat_show', {'id': c.id}) }}">{{ c.name }}</a>
+            </td>
+            <td>{{ c.createdDate|date('d.m.Y') }}</td>
+            <td></td>
+            <td>
+                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_USER') and (app.user.student == category.student or (category.community is not null and app.user.student == category.community.creator)) %}
+                <ul>
+                    <li><a href="{{ path('cat_edit', {'id': c.id}) }}">Изменить</a></li>
+                    <li><a href="{{ path('cat_delete', {'id': c.id}) }}">Удалить</a></li>
+                </ul>
+                {% endif %}
+            </td>
+
+        </tr>
+        {% endfor %}
+        {% for m in category.materials %}
+            <tr>
+                <td>
+                    <span class="glyphicon glyphicon-file"></span>
+                    <a href="{{ path('material_show', {'id': m.id}) }}">{{ m.name }}</a>
+                </td>
+                <td>{{ m.date|date('d.m.Y') }}</td>
+                <td><a href="{{ path('student_show', {'id': m.author.id}) }}">{{ m.author.lastName }} {{ m.author.firstName }}</a></td>
+                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_USER') and (app.user.student == m.author or (category.community is not null and app.user.student == category.community.creator)) %}
+                <td>
+                    <ul>
+                        <li><a href="{{ path('material_delete', {'id': m.id}) }}">Удалить</a></li>
+                    </ul>
+                </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    {% if category.student is not null %}
+    <p><a href="{{ path('student_show', {'id': category.student.id}) }}">Вернуться на страницу пользователя</a></p>
+    {% else %}
+    <p><a href="{{ path('community_show', {'id': category.community.id}) }}">Вернуться на страницу сообщества</a></p>
+    {% endif %}
 {% endblock %}

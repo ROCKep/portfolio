@@ -33,17 +33,6 @@ class Course
     private $degree;
 
 
-    /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Group", mappedBy="course")
-     */
-    private $groups;
-
-
-    public function __construct()
-    {
-        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
     public function getId()
     {
         return $this->id;
@@ -83,23 +72,5 @@ class Course
     public function getDegree()
     {
         return $this->degree;
-    }
-
-
-    public function addGroup(\AppBundle\Entity\Group $group)
-    {
-        $this->groups[] = $group;
-
-        return $this;
-    }
-
-    public function removeGroup(\AppBundle\Entity\Group $group)
-    {
-        $this->groups->removeElement($group);
-    }
-
-    public function getGroups()
-    {
-        return $this->groups;
     }
 }

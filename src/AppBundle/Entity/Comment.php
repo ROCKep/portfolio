@@ -29,14 +29,14 @@ class Comment
 
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="comments")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Student")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
-    private $user;
+    private $student;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Material", inversedBy="comments")
-     * @ORM\JoinColumn(name="material_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Material", inversedBy="comments")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $material;
 
@@ -49,8 +49,6 @@ class Comment
     public function setContent($content)
     {
         $this->content = $content;
-
-        return $this;
     }
 
     public function getContent()
@@ -58,11 +56,9 @@ class Comment
         return $this->content;
     }
 
-    public function setTime($time)
+    public function setTime()
     {
-        $this->time = $time;
-
-        return $this;
+        $this->time = new \DateTime();
     }
 
     public function getTime()
@@ -71,23 +67,19 @@ class Comment
     }
 
 
-    public function setUser(\AppBundle\Entity\User $user = null)
+    public function setStudent(Student $student = null)
     {
-        $this->user = $user;
-
-        return $this;
+        $this->student = $student;
     }
 
-    public function getUser()
+    public function getStudent()
     {
-        return $this->user;
+        return $this->student;
     }
 
-    public function setMaterial(\AppBundle\Entity\Material $material = null)
+    public function setMaterial(Material $material = null)
     {
         $this->material = $material;
-
-        return $this;
     }
 
     public function getMaterial()
